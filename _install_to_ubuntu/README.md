@@ -1,5 +1,5 @@
 <div style="text-align:center">
-<img width="720" alt="architettura" src="_img/logo.png">
+<img width="720" alt="logo_kubernates" src="_img/logo.png">
 </div>
 
 
@@ -26,6 +26,10 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 | RAM   | 48Gb DDR4             |
 | DISCO | SSD 512Gb + HDD 1Tb   |
 
+
+<div>
+<img width="240" alt="servers" src="_img/servers.png">
+</div>
 
 #### Installare TRE VM:
 -   VM Ubuntu Server (Configurazione minima per garatire un buon funzionamento)
@@ -59,11 +63,9 @@ apt-get install docker.io
 - Abilitare il servizio Docker durante l'avvio.
 ```
 systemctl enable docker.service
-
 systemctl daemon-reload
 systemctl restart docker
 systemctl enable docker
-
 ```
 
 #### Qui hai due possibilità:
@@ -121,14 +123,17 @@ Lo spazio di paginazione del disco rigido viene utilizzato per memorizzare tempo
 ```
 sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 swapoff -a
+
 ```
 
-In alternativa si puo modificare a mano
+In alternativa si può modificare a mano:
+
 ```
 vi /etc/fstab
 
 /dev/disk/by-uuid/a24f00e7-918a-4a05-b4c9-35bdef750fb4 / ext4 defaults 0 0
-# /swap.img       none    swap    sw      0       0
+#swap.img       none    swap    sw      0       0
+
 ```
 
 Editare i file di host `vim /etc/hosts`
@@ -136,6 +141,7 @@ Editare i file di host `vim /etc/hosts`
 I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal DHCP.
 
 - Sul server Kube-Master
+
 ```
 127.0.0.1 localhost
 
@@ -143,7 +149,9 @@ I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal D
 192.168.188.111 kube-slave01
 192.168.188.112 kube-slave02
 ```
+
 - Sul server Kube-Slave01
+
 ```
 127.0.0.1 localhost
 
@@ -151,7 +159,9 @@ I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal D
 127.0.0.1       kube-slave01
 192.168.188.112 kube-slave02
 ```
+
 - Sul server Kube-Slave02
+
 ```
 127.0.0.1 localhost
 
@@ -197,7 +207,6 @@ apt -y install kubeadm kubectl kubelet
 Impostiamo il kubelet in modalità standby perché si riavvia ogni pochi secondi poiché è in un ciclo di standby e in attesa di ulteriori azioni.
 ```
 apt-mark hold kubelet kubeadm kubectl
-
 kubelet set on hold.
 kubeadm set on hold.
 kubectl set on hold.
@@ -221,10 +230,11 @@ Ora caricheremo il modulo aggiuntivo br_netfilter.
 modprobe overlay
 modprobe br_netfilter
 ```
+
 Oppure modificare il file di configurazione denominato `MODULES.CONF` e aggiungere quanto segue:
+
 ```
 vi /etc/modules-load.d/modules.conf
-
 overlay
 br_netfilter
 ```
