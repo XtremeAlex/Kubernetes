@@ -6,8 +6,8 @@
 # Costruisci il tuo Cluster Kubernetes Casalingo
 #### Con versioni di Ubuntu dalla 18.04 alla 20.04
 
-Kubernetes è una piattaforma open source, sviluppata attivamente da una comunità in tutto il mondo, che permette la gestione e l'orchestrazione di container di applicazioni su larga scala, garantisce alle compagnie di maggior successo di effettuare rilasci in sicurezza ed affidabilità, in ogni genere di situazione.
-Kubernetes permette ai DevOps engineers di tutto il mondo di avere uno strumento efficace per sviluppare e deployare applicazioni.
+Kubernetes è una piattaforma open source, sviluppata attivamente dalla comunità in tutto il mondo. Permette la gestione e l'orchestrazione di container di applicazioni su larga scala, garantisce alle compagnie risparmio di risorse e la possibilità di effettuare rilasci in sicurezza ed affidabilità, in ogni genere di situazione.
+Kubernetes permette a tutti gli sviluppatori DevOps di avere uno strumento efficace per sviluppare e deployare applicazioni in autonomia.
 
 Perché le abilità da DevOps?
 
