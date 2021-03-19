@@ -6,8 +6,18 @@
 # Costruisci il tuo Cluster Kubernetes Casalingo
 #### Con versioni di Ubuntu dalla 18.04 alla 20.04
 
-Kubernetes è una piattaforma open source, sviluppata attivamente da una comunità in tutto il mondo, che permette la gestione e l'orchestrazione di container di applicazioni su larga scala.
+Kubernetes è una piattaforma open source, sviluppata attivamente da una comunità in tutto il mondo, che permette la gestione e l'orchestrazione di container di applicazioni su larga scala, garantisce alle compagnie di maggior successo di effettuare rilasci in sicurezza ed affidabilità, in ogni genere di situazione.
+Kubernetes permette ai DevOps engineers di tutto il mondo di avere uno strumento efficace per sviluppare e deployare applicazioni.
+
+Perché le abilità da DevOps?
+
+Oggigiorno i DevOps sono molto richiesti dall'industria del IT. Varie aziende richiedono profili in grado di sviluppare e rilasciare in produzione gli applicativi.
+Il salario medio di un DevOps engineer in Silicon Valley è circa  $140,000 all'anno, ovvero il 20% superiore del salario di uno sviluppatore, solo in italia si fa la fame ... e si continuando a sviluppare ancora applicazioni fortemente stateful / monolitiche.
+
+Comunque possedere abilità DevOps oggi vuol dire essere molto competitivi sul mercato!
+
 Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kubernetes.io/it/docs/concepts/overview/what-is-kubernetes/).
+
 
 ## Prerequisiti
 - SO Linux / Windows / Mac
