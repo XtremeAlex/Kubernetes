@@ -214,7 +214,7 @@ apt update
 apt -y install kubeadm kubectl kubelet
 ```
 
-Impostiamo il kubelet in modalità standby perché si riavvia ogni pochi secondi poiché è in un ciclo di standby e in attesa di ulteriori azioni.
+Impostiamo il kubelet in modalità standby perché si riavvia ogni secondo poiché è in un ciclo di standby e in attesa di ulteriori azioni.
 ```
 apt-mark hold kubelet kubeadm kubectl
 kubelet set on hold.
