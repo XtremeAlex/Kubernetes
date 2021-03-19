@@ -1,3 +1,8 @@
+<div style="text-align:center">
+<img width="720" alt="architettura" src="_img/logo.png">
+</div>
+
+
 # Costruisci il tuo Cluster Kubernetes Casalingo
 #### Con versioni di Ubuntu dalla 18.04 alla 20.04
 
@@ -15,10 +20,10 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 
 
 ## Server Personale
-|  |  | 
+|  |  |
 |:--------------|:-------------:|
-| CPU   | i7 6°Gen 8 Core       | 
-| RAM   | 48Gb DDR4             | 
+| CPU   | i7 6°Gen 8 Core       |
+| RAM   | 48Gb DDR4             |
 | DISCO | SSD 512Gb + HDD 1Tb   |
 
 
@@ -33,7 +38,7 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 
 ## Architettura
 <div style="text-align:center">
-<img width="1024" alt="architettura" src="_img/macchine.png">
+<img width="1024" alt="architettura" src="_img/kubernates.png">
 </div>
 
 #### Queste modificche devono essere applicate a ogni server.
@@ -45,7 +50,7 @@ sudo -i
 - Installare il servizio Docker.
 
 ```
-apt-get update && apt-get install -y 
+apt-get update && apt-get install -y
 apt-get -y install vim git curl apt-transport-https wget gnupg ntpdate mlocate
 
 apt-get install docker.io
@@ -63,7 +68,7 @@ systemctl enable docker
 
 #### Qui hai due possibilità:
 #### - I SOLUZIONE
-- La prima è quella di modificare il file di configurazione del servizio Docker 
+- La prima è quella di modificare il file di configurazione del servizio Docker
 ```
 updatedb
 locate docker.service
@@ -186,7 +191,7 @@ Install Kubelet, Kubeadm, and Kubectl
 
 ```
 apt update
-apt -y install kubeadm kubectl kubelet 
+apt -y install kubeadm kubectl kubelet
 ```
 
 Impostiamo il kubelet in modalità standby perché si riavvia ogni pochi secondi poiché è in un ciclo di standby e in attesa di ulteriori azioni.
@@ -260,9 +265,9 @@ kubeadm config images pull
 #### Crea cluster
 Ora useremo i seguenti parametri per creare un cluster usando il comando kubeadm.
 
-`--pod-network-cidr` 
+`--pod-network-cidr`
 - Viene utilizzato per configurare la rete e impostare gli intervalli CIDR (Classless Inter-Domain Routing), che è un metodo di indirizzamento IP senza classi.
-`--control-plane-endpoint` 
+`--control-plane-endpoint`
 - Questo è un set di endpoint di controllo comune per tutti i nodi se si utilizza in un cluster ad alta disponibilità.
 
 Lanciare perciò:
@@ -309,7 +314,7 @@ kubectl cluster-info
 ```
 
 #### Installa Calico
-Ora installeremo e configureremo il plugin Calico. 
+Ora installeremo e configureremo il plugin Calico.
 Questo plug-in è un plug-in di rete basato su host per contenitori che le macchine virtuali utilizzano per motivi di sicurezza.
 ```
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
