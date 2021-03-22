@@ -61,14 +61,19 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 sudo -i
 ```
 
-- Installare il servizio Docker.
+- Installare
 
 ```
 apt-get update && apt-get install -y
 apt-get -y install vim git curl apt-transport-https wget gnupg ntpdate mlocate
+```
 
+- Installare il servizio Docker.
+
+```
 apt-get install docker.io
 ```
+
 
 - Abilitare il servizio Docker durante l'avvio.
 ```
