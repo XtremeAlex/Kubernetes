@@ -55,7 +55,7 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 <img width="1024" alt="architettura" src="_img/kubernates.png">
 </div>
 
-#### Queste modificche devono essere applicate a ogni server.
+#### Queste modifiche devono essere applicate a ogni server.
 - Salire come root user
 ```
 sudo -i
