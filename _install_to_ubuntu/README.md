@@ -8,7 +8,7 @@
 
 
 <div style="text-align:center">
-<img width="500" alt="servers" src="_img/miniserver.jpg">
+<img width="480" alt="servers" src="_img/miniserver.jpg">
 </div>
 
 
