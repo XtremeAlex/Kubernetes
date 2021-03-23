@@ -376,7 +376,9 @@ Creare un file YAML con la nuova configurazione del servizio. (externalip => ip 
 ```
 mkdir -p /kubernates/nginx
 vim /kubernates/nginx/deployment.yaml
+```
 
+```
 apiVersion: apps/v1
 kind: Deployment
 metadata:
