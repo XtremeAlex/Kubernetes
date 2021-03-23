@@ -4,8 +4,8 @@
 
 
 # Costruisci il tuo Cluster Kubernetes Casalingo
-<div style="text-align:left">
-<img width="480" alt="servers" src="_img/miniserver.jpg">
+<div style="text-align:center">
+<img width="500" alt="servers" src="_img/miniserver.jpg">
 </div>
 
 #### Con versioni di Ubuntu dalla 18.04 alla 20.04
