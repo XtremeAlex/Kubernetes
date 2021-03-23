@@ -118,7 +118,7 @@ TimeoutSec=0
 
 //... code
 ```
-#### - II SOLUZIONE
+#### - II SOLUZIONE <CONSIGLIATA>
 - La seconda soluzione non implica la modifica di unità systemd o drop-in.
 - Creare (o modificare) il file di configurazione `etc/docker/daemon.json` e includere quanto segue:
 
