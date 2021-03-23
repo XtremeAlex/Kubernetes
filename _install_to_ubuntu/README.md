@@ -374,22 +374,33 @@ kubectl get pods --output=wide
 
 Creare un file YAML con la nuova configurazione del servizio. (externalip => ip kube-master)
 ```
+mkdir /kubernates/nginx
 vim /kubernates/nginx/deployment.yaml
 
-apiVersion: v1
-kind: Service
+apiVersion: apps/v1
+kind: Deployment
 metadata:
-  name: test-web
+  name: nginx-deployment
 spec:
   selector:
-    app: test
-  ports:
-    - name: http
-      protocol: TCP
-      port: 80
-      targetPort: 80
-  externalIPs:
-    - externalip
+    matchLabels:
+      app: nginx
+  replicas: 2 # tells deployment to run 2 pods matching the template
+  template:
+    metadata:
+      labels:
+        app: nginx
+    spec:
+      containers:
+      - name: nginx
+        image: nginx:1.14.2
+        ports:
+					- name: http
+						protocol: TCP
+						port: 80
+						targetPort: 80
+		externalIPs:
+			  - externalip
 ```
 
 Installare il nuovo servizio Kubernetes.
@@ -405,9 +416,10 @@ Verificare l'elenco dei servizi Kubernetes.
 kubectl get services
 ```
 
-Nel nostro esempio, abbiamo creato un nuovo POD usando l'immagine NGINX.
-Nel nostro esempio, abbiamo creato un nuovo servizio denominato TEST-WEB.
-Nel nostro esempio, abbiamo esposto la porta 80 dal nostro POD come la porta 80 dell'host 192.168.100.9.
+- E' stato creato un nuovo POD usando l'immagine NGINX.
+- E' stato creato un nuovo servizio denominato nginx-deployment.
+- E' statoesposto la porta 80 dal nostro POD come la porta 80 dell'host externalip.
+
 Utilizzare il comando CURL per verificare la comunicazione con il POD che esegue Nginx.
 ```
 curl http://externalip
@@ -418,6 +430,10 @@ Nel nostro esempio, il seguente URL è stato immesso nel browser:
 • http://externalip
 
 Il server Kubernetes visualizzerà la pagina Nginx.
+
+
+### Eliminare il deployment
+kubectl delete deployment nginx-deployment
 
 
 ## Author
