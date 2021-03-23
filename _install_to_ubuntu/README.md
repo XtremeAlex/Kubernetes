@@ -374,7 +374,7 @@ kubectl get pods --output=wide
 
 Creare un file YAML con la nuova configurazione del servizio. (externalip => ip kube-master)
 ```
-mkdir /kubernates/nginx
+mkdir -p /kubernates/nginx
 vim /kubernates/nginx/deployment.yaml
 
 apiVersion: apps/v1
