@@ -156,30 +156,40 @@ I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal D
 
 ```
 127.0.0.1 localhost
+192.168.188.110 externalip
 
 127.0.0.1       kube-master
 192.168.188.111 kube-slave01
 192.168.188.112 kube-slave02
+
+
+
 ```
 
 - Sul server Kube-Slave01
 
 ```
 127.0.0.1 localhost
+192.168.188.111 externalip
 
 192.168.188.110 kube-master
 127.0.0.1       kube-slave01
 192.168.188.112 kube-slave02
+
+
 ```
 
 - Sul server Kube-Slave02
 
 ```
 127.0.0.1 localhost
+192.168.188.112 externalip
 
 192.168.188.110 kube-master
 192.168.188.111 kube-slave01
 127.0.0.1       kube-slave02
+
+
 ```
 
 Creare un file per configurare le variabili di ambiente necessarie.`vi /etc/profile.d/kubernetes.sh`
@@ -343,6 +353,71 @@ watch kubectl get pods --all-namespaces
 ```
 kubectl get nodes -o wide
 ```
+
+### TEST
+Abilitare il master Kubernetes per l'esecuzione di PODS.
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
+
+Creare un POD utilizzando l'immagine Nginx.
+```
+kubectl create deployment test  --image=nginx
+```
+
+Nel nostro esempio, abbiamo creato un POD denominato TEST.
+Attendere che il sistema per scaricare l'immagine Nginx e avviare il POD.
+
+```
+kubectl get pods --output=wide
+```
+
+Creare un file YAML con la nuova configurazione del servizio. (externalip => ip kube-master)
+```
+vim /kubernates/nginx/deployment.yaml
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: test-web
+spec:
+  selector:
+    app: test
+  ports:
+    - name: http
+      protocol: TCP
+      port: 80
+      targetPort: 80
+  externalIPs:
+    - externalip
+```
+
+Installare il nuovo servizio Kubernetes.
+
+```
+kubectl apply -f /kubernates/nginx/deployment.yaml
+```
+
+
+Verificare l'elenco dei servizi Kubernetes.
+
+```
+kubectl get services
+```
+
+Nel nostro esempio, abbiamo creato un nuovo POD usando l'immagine NGINX.
+Nel nostro esempio, abbiamo creato un nuovo servizio denominato TEST-WEB.
+Nel nostro esempio, abbiamo esposto la porta 80 dal nostro POD come la porta 80 dell'host 192.168.100.9.
+Utilizzare il comando CURL per verificare la comunicazione con il POD che esegue Nginx.
+```
+curl http://externalip
+```
+
+Apri il tuo browser e inserisci l'indirizzo IP del tuo server Kubernetes.
+Nel nostro esempio, il seguente URL è stato immesso nel browser:
+• http://externalip
+
+Il server Kubernetes visualizzerà la pagina Nginx.
 
 
 ## Author
