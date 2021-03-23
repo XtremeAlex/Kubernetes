@@ -297,7 +297,7 @@ Ora useremo i seguenti parametri per creare un cluster usando il comando kubeadm
 `--control-plane-endpoint`
 - Questo è un set di endpoint di controllo comune per tutti i nodi se si utilizza in un cluster ad alta disponibilità.
 
-Copiare l'output di questo comando che ci servirà in seguito.
+#### Copiare l'output di questo comando che ci servirà in seguito.
 ```
 kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 ```
