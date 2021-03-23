@@ -148,16 +148,6 @@ swapoff -a
 
 ```
 
-In alternativa si può modificare a mano:
-
-```
-vi /etc/fstab
-
-/dev/disk/by-uuid/a24f00e7-918a-4a05-b4c9-35bdef750fb4 / ext4 defaults 0 0
-#swap.img       none    swap    sw      0       0
-
-```
-
 Editare i file di host `vim /etc/hosts`
 
 I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal DHCP.
@@ -200,6 +190,11 @@ export KUBECONFIG=/etc/kubernetes/admin.conf
 Riavviare la VM.
 ```
 reboot
+```
+
+- Salire come root user
+```
+sudo -i
 ```
 
 Scaricare e installare la chiave del repository Kubernetes.
@@ -261,6 +256,7 @@ overlay
 br_netfilter
 ```
 
+
 Creare un file di configurazione di sistema, nella configurazione sysctl da K8s, assegniamo il valore 1, che significa controllare il traffico.
 ```
 vi /etc/sysctl.d/k8s.conf
@@ -293,7 +289,6 @@ Scarica le config necessarie.
 kubeadm config images pull
 ```
 
-
 #### Crea cluster
 Ora useremo i seguenti parametri per creare un cluster usando il comando kubeadm.
 
@@ -307,24 +302,11 @@ Lanciare perciò:
 kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 ```
 
-Per iniziare a utilizzare il nostro cluster, dobbiamo consentire la configurarazione per il nostro utente cosi da esegurie eseguire kubectl.
-```
-mkdir -p $HOME/.kube
-cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-chown $(id -u):$(id -g) $HOME/.kube/config
-```
-
-Ora dovremmo essere in grado di distribuire una rete pod al cluster (esempio)
-```
-kubectl apply -f [podnetwork].yaml" con una delle opzioni elencate -> https://kubernetes.io/docs/concepts/cluster-administration/addons/
-```
-
 Ora possiamo connettere un numero qualsiasi di nodi al master copiando le chiavi dell'account di servizio su ciascun nodo e quindi eseguendo il comando seguente come root:
 Worker 1 & Worker 2
 ```
 kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
---discovery-token-ca-cert-hash sha256:8d0b3...721 \
---control-plane
+--discovery-token-ca-cert-hash sha256:8d0b3...721
 ```
 
 #### Verifica i nodi del cluster
@@ -345,7 +327,7 @@ kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 kubectl cluster-info
 ```
 
-#### Installa Calico
+#### Installa Calico Solamente sul Master
 Ora installeremo e configureremo il plugin Calico.
 Questo plug-in è un plug-in di rete basato su host per contenitori che le macchine virtuali utilizzano per motivi di sicurezza.
 ```
