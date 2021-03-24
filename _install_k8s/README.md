@@ -157,11 +157,11 @@ I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal D
 
 ```
 127.0.0.1 localhost
-192.168.188.110 externalip
+xxx.xxx.xxx.110 externalip
 
 127.0.0.1       kube-master
-192.168.188.111 kube-slave01
-192.168.188.112 kube-slave02
+xxx.xxx.xxx.111 kube-slave01
+xxx.xxx.xxx.112 kube-slave02
 
 
 
@@ -171,11 +171,11 @@ I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal D
 
 ```
 127.0.0.1 localhost
-192.168.188.111 externalip
+xxx.xxx.xxx.111 externalip
 
-192.168.188.110 kube-master
+xxx.xxx.xxx.110 kube-master
 127.0.0.1       kube-slave01
-192.168.188.112 kube-slave02
+xxx.xxx.xxx.112 kube-slave02
 
 
 ```
@@ -184,10 +184,10 @@ I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal D
 
 ```
 127.0.0.1 localhost
-192.168.188.112 externalip
+xxx.xxx.xxx.112 externalip
 
-192.168.188.110 kube-master
-192.168.188.111 kube-slave01
+xxx.xxx.xxx.110 kube-master
+xxx.xxx.xxx.111 kube-slave01
 127.0.0.1       kube-slave02
 
 
@@ -466,7 +466,7 @@ spec:
       targetPort: 80
       port: 80
   externalIPs:
-    - 192.168.188.120
+    - xxx.xxx.xxx.110
 
 ```
 
