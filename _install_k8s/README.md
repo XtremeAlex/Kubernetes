@@ -143,7 +143,7 @@ systemctl status docker
 
 Affinché kubelet funzioni correttamente, è essenziale disabilitare la memoria SWAP.
 Lo spazio di paginazione del disco rigido viene utilizzato per memorizzare temporaneamente i dati quando non c'è abbastanza spazio nella RAM.
--Perciò disabilitare l'utilizzo della memoria Swap.
+- #### Disabilitare l'utilizzo della memoria Swap.
 
 ```
 sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
