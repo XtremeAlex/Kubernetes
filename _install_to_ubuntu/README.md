@@ -372,7 +372,7 @@ Attendere che il sistema per scaricare l'immagine Nginx e avviare il POD.
 kubectl get pods --output=wide
 ```
 
-Creare un file YAML con la nuova configurazione del servizio. (externalip => ip kube-master)
+Creare un file YAML con la nuova configurazione del deployment.
 ```
 mkdir -p /kubernates/nginx
 vim /kubernates/nginx/deployment.yaml
@@ -397,20 +397,53 @@ spec:
       - name: nginx
         image: nginx:1.14.2
         ports:
-					- name: http
-						protocol: TCP
-						port: 80
-						targetPort: 80
-		externalIPs:
-			  - externalip
+        - containerPort: 80
+
 ```
 
-Installare il nuovo servizio Kubernetes.
+Installare il nuovo deployment su Kubernetes.
 
 ```
 kubectl apply -f /kubernates/nginx/deployment.yaml
 ```
 
+Installare il nuovo deploynebt su Kubernetes.
+```
+kubectl get deployment
+```
+
+
+Creare un file YAML con la nuova configurazione del servizio. (IP => kube-master)
+```
+vim /kubernates/nginx/service.yaml
+```
+
+```
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: nginx-service
+  labels:
+    app: nginx
+spec:
+  type: NodePort
+  selector:
+    app: nginx
+  ports:
+    - protocol: TCP
+      targetPort: 80
+      port: 80
+  externalIPs:
+    - 192.168.188.120
+
+```
+
+Installare il nuovo servizio Kubernetes.
+
+```
+kubectl apply -f /kubernates/nginx/service.yaml
+```
 
 Verificare l'elenco dei servizi Kubernetes.
 
