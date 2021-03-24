@@ -9,6 +9,7 @@ Prima di tutto bisogna prendere in considerazione che nginx necessiterà dei alc
 ### Si può procedere in due modi:
 
  - #### 1 Creare una ConfigMap Object e montarla
+
 ```
 mkdir -p /kubernates/nginx-k8s
 vim /kubernates/nginx-k8s/deployment.yaml
@@ -36,6 +37,34 @@ data:
     qui
 
 ```
+
+#### Esempio:
+
+```
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: nginx-config
+data:
+  nginx.conf: |
+    user nginx;
+    worker_processes  1;
+    events {
+      worker_connections  10240;
+    }
+    http {
+      server {
+          listen       80;
+          server_name  localhost;
+          location / {
+            root   /usr/share/nginx/html; #Change this line
+            index  index.html index.htm;
+        }
+      }
+    }
+
+```
+
 
 - #### 2 Creare un file conf dentro un path `/kubernates/nginx-k8s/nginx.conf` , convertirlo in mappa e poi montarlo:
 
