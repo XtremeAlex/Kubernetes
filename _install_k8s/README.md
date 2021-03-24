@@ -34,6 +34,7 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 - RAM DISPONIBILE 12GB (Attenzione che non si potrà uttilizzare lo SWAP)
 - HDD 150GB DISPONIBILI (Si consigia un SSD)
 - [Download](https://releases.ubuntu.com/20.04.2/ubuntu-20.04.2-live-server-amd64.iso) di Ubuntu Server 20.04.2
+- Salvare nei preferiti [kubernetes/docs](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#-strong-getting-started-strong)
 
 
 ## Server Personale
@@ -121,7 +122,7 @@ TimeoutSec=0
 ```
 ####  - II SOLUZIONE  (Consigliata)
 - La seconda soluzione non implica la modifica di unità systemd o drop-in.
-- Creare (o modificare) il file di configurazione `etc/docker/daemon.json` e includere quanto segue:
+- Creare (o modificare) il file di configurazione `vim /etc/docker/daemon.json` e includere quanto segue:
 
 ```
 {
@@ -193,11 +194,12 @@ xxx.xxx.xxx.111 kube-slave01
 
 ```
 
-Creare un file per configurare le variabili di ambiente necessarie.`vi /etc/profile.d/kubernetes.sh`
+Creare un file per configurare le variabili di ambiente necessarie.`vim /etc/profile.d/kubernetes.sh`
 ```
 #!/bin/bash
 export KUBECONFIG=/etc/kubernetes/admin.conf
 ```
+
 Riavviare la VM.
 ```
 reboot
@@ -240,10 +242,30 @@ kubeadm set on hold.
 kubectl set on hold.
 ```
 
+Per far funzionare kubectl con utente non root, esegui questi comandi:
+Se sei root lancia `su kube` per tornare con l'utenza non root
+```
+su kube
+
+mkdir -p $HOME/.kube
+sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
+sudo chown $(id -u):$(id -g) $HOME/.kube/config
+
+sudo -i
+```
+
+Altrimenti se sei root lanciare il seguente comando:
+```
+export KUBECONFIG=/etc/kubernetes/admin.conf
+```
+
+
 Verifichiamo l'installazione
 ```
 kubectl version --client && kubeadm version
 ```
+
+
 
 #### Firewall
 
@@ -312,6 +334,41 @@ Ora useremo i seguenti parametri per creare un cluster usando il comando kubeadm
 ```
 kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 ```
+
+
+#### Sul nodo Master
+Per impostazione predefinita, il tuo cluster non schedula i pod in modo automatico sul nodo master per motivi di sicurezza.
+
+Per abilitare la schedulazione dei pod, ad esempio per un cluster Kubernetes a macchina singola per lo sviluppo, esegui:
+
+##### add taints (non schedulare pods su master):
+```
+kubectl taint node kube-master node-role.kubernetes.io/master:NoSchedule
+
+```
+
+##### [+] remove taints (consenti di schedule pods su master):
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+
+```
+
+##### [+] Se vuoi sapere se ci sono o meno contaminazioni sul nodo master, esegui il seguente comando:
+```
+kubectl get node kube-master --export -o yaml
+
+```
+
+
+
+[+] Oppure dopo aver aggiunto i nodi lanciare i seguenti cmd per ogni nodo
+
+```
+kubectl taint node kube-slave01 node-role.kubernetes.io/master:NoSchedule-
+kubectl taint node kube-slave02 node-role.kubernetes.io/master:NoSchedule-
+```
+
+
 
 Ora possiamo connettere un numero qualsiasi di nodi al master copiando le chiavi dell'account di servizio su ciascun nodo e quindi eseguendo il comando seguente come root:
 Worker 1 & Worker 2
@@ -399,20 +456,11 @@ kubectl get nodes -o wide
 ```
 
 
+
+
+
+
 ### Deployamo un'applicazione di Test
-
-Abilitare il master Kubernetes per l'esecuzione di PODS.
-```
-kubectl taint nodes --all node-role.kubernetes.io/master-
-
-```
-Oppure
-
-```
-kubectl taint node slave01 node-role.kubernetes.io/master:NoSchedule-
-kubectl taint node slave02 node-role.kubernetes.io/master:NoSchedule-
-```
-
 
 Creare un file YAML con la nuova configurazione del deployment.
 ```

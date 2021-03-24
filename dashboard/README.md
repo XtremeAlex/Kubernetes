@@ -2,7 +2,7 @@
 <img width="" alt="dashboard" src="_img/dashboard.png">
 </div>
 
-# Kubernetes Dashboard
+# [Kubernetes Dashboard](https://github.com/kubernetes/dashboard)
 ## E' il client GUI più usato su Kubernetes.
 
 Questa dashboard Web offre una panoramica delle applicazioni in esecuzione sul cluster, nonché permette la creazione o la modifica di singole risorse Kubernetes.
@@ -19,5 +19,15 @@ Alcuni tutorial suggeriscono di iniettare un proxy di riserva OAuth2 davanti per
 
 #### Per installarlo eseguire il seguente comando sul master
 ```
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml# ref: https://kubernetes.io/docs/tasks/access-application-cluster/web-ui-dashboard/#deploying-the-dashboard-ui
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
+```
+
+#### Lanciare un Tunnel Proxy con:
+```
+kubectl proxy
+```
+
+#### Da browser
+```
+http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 ```
