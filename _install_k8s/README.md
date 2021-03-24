@@ -63,6 +63,7 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 </div>
 
 #### Queste modifiche devono essere applicate a ogni server.
+
 - Salire come root user
 ```
 sudo -i
@@ -91,7 +92,8 @@ systemctl enable docker
 ```
 
 #### Qui hai due possibilità:
-#### - I SOLUZIONE
+#### [+] - I SOLUZIONE
+
 - La prima è quella di modificare il file di configurazione del servizio Docker
 ```
 updatedb
@@ -118,7 +120,7 @@ TimeoutSec=0
 
 //... code
 ```
-#### - II SOLUZIONE <CONSIGLIATA>
+####  - II SOLUZIONE  (Consigliata)
 - La seconda soluzione non implica la modifica di unità systemd o drop-in.
 - Creare (o modificare) il file di configurazione `etc/docker/daemon.json` e includere quanto segue:
 
@@ -354,23 +356,53 @@ watch kubectl get pods --all-namespaces
 kubectl get nodes -o wide
 ```
 
-### TEST
+#### Aggiungere i ruoli ai nodi in kubernetes
+```
+kubectl label node <node name> node-role.kubernetes.io/<role name>=<key - (any name)>
+
+```
+
+```
+kubectl label nodes slave01 kubernetes.io/role=worker1
+kubectl label nodes slave02 kubernetes.io/role=worker2
+kubectl get nodes -o wide
+```
+
+##### [+] Aggiorna i ruoli ai nodi in kubernetes
+```
+kubectl label --overwrite nodes <your_node> kubernetes.io/role=<your_new_label>
+
+```
+
+```
+kubectl label --overwrite nodes slave01 kubernetes.io/role=custom,worker1
+kubectl get nodes -o wide
+```
+
+
+##### [+] Rimuovi i ruoli ai nodi in kubernetes
+```
+kubectl label node <node name> node-role.kubernetes.io/<role name>-
+
+```
+
+```
+kubectl label node slave01 node-role.kubernetes.io/worker1-
+kubectl label node slave02 node-role.kubernetes.io/worker2-
+kubectl get nodes -o wide
+```
+
+
+
+
+
+### Deployamo un'applicazione di Test
+
 Abilitare il master Kubernetes per l'esecuzione di PODS.
 ```
 kubectl taint nodes --all node-role.kubernetes.io/master-
 ```
 
-Creare un POD utilizzando l'immagine Nginx.
-```
-kubectl create deployment test  --image=nginx
-```
-
-Nel nostro esempio, abbiamo creato un POD denominato TEST.
-Attendere che il sistema per scaricare l'immagine Nginx e avviare il POD.
-
-```
-kubectl get pods --output=wide
-```
 
 Creare un file YAML con la nuova configurazione del deployment.
 ```
@@ -451,6 +483,11 @@ Verificare l'elenco dei servizi Kubernetes.
 kubectl get services
 ```
 
+Verificare l'elenco dei pods Kubernetes.
+```
+kubectl get pods --output=wide
+```
+
 - E' stato creato un nuovo POD usando l'immagine NGINX.
 - E' stato creato un nuovo servizio denominato nginx-deployment.
 - E' statoesposto la porta 80 dal nostro POD come la porta 80 dell'host externalip.
@@ -467,9 +504,11 @@ Nel nostro esempio, il seguente URL è stato immesso nel browser:
 Il server Kubernetes visualizzerà la pagina Nginx.
 
 
-### Eliminare il deployment
+### Eliminare il test, cancellando il services e deployment
+```
+kubectl delete services nginx-service
 kubectl delete deployment nginx-deployment
-
+```
 
 ## Author
 `Andrei Alexandru Dabija`
