@@ -159,7 +159,7 @@ Oppure
 swapoff -a
 ```
 
-[+] Lanciare free per verificare lo `swap`.
+[+] Lanciare `free` per verificare lo `swap`.
 Alcuni preferiscono creare una crontab per disattivare ad ogni riavvio lo swap
 ```
 sudo -s
