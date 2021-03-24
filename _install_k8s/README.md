@@ -347,13 +347,19 @@ kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 
 #### Verifichiamo lo stato dei Pod
 ```
-watch kubectl get pods --all-namespaces
+kubectl get pods --all-namespaces -o jsonpath="{..image}" |\
+tr -s '[[:space:]]' '\n' |\
+sort |\
+uniq -c
+
 ```
 
 #### Verifichiamo la configurazione
 ```
 kubectl get nodes -o wide
 ```
+
+https://<MASTERIP>:6443/
 
 #### Aggiungere i ruoli ai nodi in kubernetes
 ```
@@ -400,6 +406,13 @@ kubectl get nodes -o wide
 Abilitare il master Kubernetes per l'esecuzione di PODS.
 ```
 kubectl taint nodes --all node-role.kubernetes.io/master-
+
+```
+Oppure
+
+```
+kubectl taint node slave01 node-role.kubernetes.io/master:NoSchedule-
+kubectl taint node slave02 node-role.kubernetes.io/master:NoSchedule-
 ```
 
 
