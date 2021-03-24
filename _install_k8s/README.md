@@ -338,8 +338,8 @@ kubectl cluster-info
 ```
 
 #### Installa Calico Solamente sul Master
-Ora installeremo e configureremo il plugin Calico.
-Questo plug-in è un plug-in di rete basato su host per contenitori che le macchine virtuali utilizzano per motivi di sicurezza.
+Ora bisogna installare il plugin [Calico](https://docs.projectcalico.org/about/about-calico).
+Questo plug-in di rete viene usato sia su host fisici che sulle macchine virtuali, viene utilizzato per motivi di sicurezza.
 ```
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ```
