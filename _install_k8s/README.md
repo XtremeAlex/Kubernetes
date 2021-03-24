@@ -259,7 +259,7 @@ modprobe overlay
 modprobe br_netfilter
 ```
 
-Oppure modificare il file di configurazione denominato `MODULES.CONF` e aggiungere quanto segue:
+[+] Oppure modificare il file di configurazione denominato `MODULES.CONF` e aggiungere quanto segue:
 
 ```
 vi /etc/modules-load.d/modules.conf
