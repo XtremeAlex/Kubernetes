@@ -88,7 +88,6 @@ apt-get install docker.io
 systemctl enable docker.service
 systemctl daemon-reload
 systemctl restart docker
-systemctl enable docker
 ```
 
 #### Qui hai due possibilità:
