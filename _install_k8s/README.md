@@ -144,13 +144,36 @@ systemctl status docker
 Affinché kubelet funzioni correttamente, è essenziale disabilitare la memoria SWAP.
 Lo spazio di paginazione del disco rigido viene utilizzato per memorizzare temporaneamente i dati quando non c'è abbastanza spazio nella RAM.
 -Perciò disabilitare l'utilizzo della memoria Swap.
+
 ```
-sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+```
+
+Oppure
+```
+sudo sed -i '/ swap / s/^/#/' /etc/fstab
+```
+
+Oppure
+```
 swapoff -a
+```
+
+[+] Lanciare free per verificare lo `swap`.
+Alcuni preferiscono creare una crontab per disattivare ad ogni riavvio lo swap
+```
+sudo -s
+crontab -e
 
 ```
 
-Editare i file di host `vim /etc/hosts`
+ - aggiungi:
+```
+@reboot sudo swapoff -a  
+```
+
+
+##### Editare i file di host `vim /etc/hosts`
 
 I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal DHCP.
 
