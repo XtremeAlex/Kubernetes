@@ -357,9 +357,10 @@ uniq -c
 #### Verifichiamo la configurazione
 ```
 kubectl get nodes -o wide
-```
 
-https://<MASTERIP>:6443/
+https://MASTERIP:6443/
+
+```
 
 #### Aggiungere i ruoli ai nodi in kubernetes
 ```
@@ -396,9 +397,6 @@ kubectl label node slave01 node-role.kubernetes.io/worker1-
 kubectl label node slave02 node-role.kubernetes.io/worker2-
 kubectl get nodes -o wide
 ```
-
-
-
 
 
 ### Deployamo un'applicazione di Test
