@@ -407,7 +407,7 @@ Installare il nuovo deployment su Kubernetes.
 kubectl apply -f /kubernates/nginx/deployment.yaml
 ```
 
-Installare il nuovo deploynebt su Kubernetes.
+Verificare i deployment avviati
 ```
 kubectl get deployment
 ```
@@ -472,7 +472,7 @@ kubectl delete deployment nginx-deployment
 
 
 ## Author
-Andrei Alexandru Dabija
+`Andrei Alexandru Dabija`
 
 ###### Un sincero grazie alla community mi ha permesso di Fornire questa guida
 - [StackOverflow](https://stackoverflow.com/search?q=kubernates)
