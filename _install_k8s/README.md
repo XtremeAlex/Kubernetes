@@ -52,11 +52,12 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 #### Installare TRE VM:
 -   VM Ubuntu Server (Configurazione minima per garatire un buon funzionamento)
 
-| NOME | CPU | Ram (GB)| Disco (GB)|
-|:--------------|:-------------:|--------------:|--------------:|
-| Kube-Master  | 2 | 4 | 50 |
-| Kube-Slave01 | 1 | 4 | 50 |
-| Kube-Slave02 | 1 | 4 | 50 |
+| NOME | CPU | Ram (Mb)|  CPU Conf Consigliata | Ram (Mb) Conf Consigliata | Disco (GB)|
+|:--------------|:-------------:|--------------:|--------------:|--------------:|--------------:|
+| Kube-Master  | 2 | 4096 | 4 | 8192 | 50 |
+| Kube-Slave01 | 1 | 2048 | 2 | 4096 | 50 |
+| Kube-Slave02 | 1 | 2048 | 2 | 4096 | 50 |
+
 
 ## Architettura
 <div style="text-align:center">
@@ -392,13 +393,21 @@ kubectl taint node kube-slave02 node-role.kubernetes.io/master:NoSchedule-
 ```
 
 
+## Aggiungi i Nodi
 
 Ora possiamo connettere un numero qualsiasi di nodi al master copiando le chiavi dell'account di servizio su ciascun nodo e quindi eseguendo il comando seguente come root:
-Worker 1 & Worker 2
+Worker 1 & Worker 2 Worker N
+
+<div>
+<img width="240" alt="slave" src="_img/slave.jpg">
+</div>
+
 ```
 kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 --discovery-token-ca-cert-hash sha256:8d0b3...721
 ```
+
+
 
 #### Verifica i nodi del cluster
 Ora sul server Master, esegui il seguente comando per verificare se gli Worker 1 e 2 sono stati aggiunti al cluster.
