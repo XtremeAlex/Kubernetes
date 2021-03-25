@@ -402,6 +402,7 @@ Worker 1 & Worker 2 Worker N
 <img width="240" alt="slave" src="_img/slave.jpg">
 </div>
 
+ -  Da eseguire su ogni Slave disponibile
 ```
 kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 --discovery-token-ca-cert-hash sha256:8d0b3...721
