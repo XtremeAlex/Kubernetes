@@ -409,7 +409,6 @@ kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 ```
 
 
-
 #### Verifica i nodi del cluster
 Ora sul server Master, esegui il seguente comando per verificare se gli Worker 1 e 2 sono stati aggiunti al cluster.
 ```
