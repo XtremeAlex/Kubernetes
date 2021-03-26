@@ -1,4 +1,4 @@
-comoditàdisponibili<div style="text-align:center">
+<div style="text-align:center">
 <img width="720" alt="logo_kubernates" src="_img/logo.png">
 </div>
 
