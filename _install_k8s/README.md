@@ -58,12 +58,8 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 
 
 ### Installazione Ubuntu Server
-Per comodita usero PROXMOX seguire la guida  `/proxmox/README.md` [QUI]()
+Per comodita usero PROXMOX seguire la guida  `/proxmox/README.md` [QUI](https://github.com/XtremeAlex/Kubernetes/tree/develop/proxmox)
 
-#### Fare un clone rinominando le img oppure reconfigurare come sopra le img come segue
-<div>
-<img width="" alt="servers" src="_img/screen/8_crea_vm.png">
-</div>
 
 ## Architettura Kubernates Finale
 <div style="text-align:center">
