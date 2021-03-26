@@ -7,7 +7,7 @@
 
 ## Prerequisiti
 - SO Linux / Windows / Mac
-- [PROXMOX](https://www.proxmox.com/en/)
+- [PROXMOX Installato](https://www.proxmox.com/en/)
 
 
 #### Installare TRE VM:
