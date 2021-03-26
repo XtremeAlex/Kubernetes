@@ -63,8 +63,8 @@
 <img width="" alt="servers" src="_img/screen/8_crea_vm.png">
 </div>
 
-#### Visualizzare la guida su `_install_ubuntu/README.md` per la guida su come installare Ubuntu
- - #### [Clicca qui per installare Ubuntu Server](https://github.com/XtremeAlex/Kubernetes/tree/develop/_install_ubuntu)
+#### Visualizzare la guida su `XtremeAlex/Linux/ubuntu/README.md` per la guida su come installare Ubuntu
+ - #### [Clicca qui per installare Ubuntu Server](https://github.com/XtremeAlex/Linux/tree/main/ubuntu)
 
 ## Author
 `Andrei Alexandru Dabija`
