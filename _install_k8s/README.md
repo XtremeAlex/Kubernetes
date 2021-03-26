@@ -1,4 +1,4 @@
-<div style="text-align:center">
+comoditàdisponibili<div style="text-align:center">
 <img width="720" alt="logo_kubernates" src="_img/logo.png">
 </div>
 
@@ -6,11 +6,9 @@
 # Costruisci il tuo Cluster Kubernetes Casalingo
 #### Con versioni di Ubuntu dalla 18.04 alla 20.04
 
-
 <div style="text-align:center">
 <img width="480" alt="servers" src="_img/miniserver.jpg">
 </div>
-
 
 
 Kubernetes è una piattaforma open source, sviluppata attivamente dalla comunità in tutto il mondo. Permette la gestione e l'orchestrazione di container di applicazioni su larga scala, garantisce alle compagnie risparmio di risorse e la possibilità di effettuare rilasci in sicurezza ed affidabilità, in ogni genere di situazione.
@@ -19,7 +17,7 @@ Kubernetes permette a tutti gli sviluppatori DevOps di avere uno strumento effic
 Perché servono abilità da DevOps?
 
 Oggigiorno i DevOps sono molto richiesti dall'industria del IT. Varie aziende richiedono profili in grado di sviluppare e rilasciare in produzione gli applicativi.
-Il salario medio di un DevOps engineer in Silicon Valley è circa  $140,000 all'anno, ovvero il 20% superiore del salario di uno sviluppatore, solo in italia si fa la fame ... e si continuando a sviluppare ancora applicazioni fortemente stateful e monolitiche.
+Il salario medio di un DevOps engineer in Silicon Valley è circa  $140,000 all'anno, ovvero il 20% superiore del salario di uno sviluppatore, solo in Italia si fa la fame ... e si continuando a sviluppare ancora applicazioni fortemente stateful e monolitiche.
 
 Comunque possedere abilità DevOps oggi vuol dire essere molto competitivi sul mercato!
 
@@ -59,7 +57,15 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 | Kube-Slave02 | 1 | 2048 | 2 | 4096 | 50 |
 
 
-## Architettura
+### Installazione Ubuntu Server
+Per comodita usero PROXMOX seguire la guida  `/proxmox/README.md` [QUI]()
+
+#### Fare un clone rinominando le img oppure reconfigurare come sopra le img come segue
+<div>
+<img width="" alt="servers" src="_img/screen/8_crea_vm.png">
+</div>
+
+## Architettura Kubernates Finale
 <div style="text-align:center">
 <img width="1024" alt="architettura" src="_img/kubernates.png">
 </div>
@@ -102,7 +108,13 @@ locate docker.service
 vi /etc/systemd/system/multi-user.target.wants/docker.service
 ```
 
+
+In questo modo forzeremo l’uso dei driver “systemd”, riavviamo il servizio di docker.
 Aggiungere la seguente configurazione alla fine dell'elemento denominato: EXECSTART
+In questo modo forzeremo l’uso dei driver “systemd”, riavviamo il servizio di docker.
+
+ATTENZIONE: kubernetes non risulta compatibile con i file system formattati in ext4 ( consigliano lo zfs), durante lo start del master quindi se avete un file system formattato in ext4 potrebbe darvi un warning.
+Ignoratatelo per il momento, infatti non vi impedirà di creare pod o deploy sul cluster che stiamo andando a creare
 
 ```
 --exec-opt native.cgroupdriver=systemd
@@ -165,7 +177,6 @@ Alcuni preferiscono creare una crontab per disattivare ad ogni riavvio lo swap
 ```
 sudo -s
 crontab -e
-
 ```
 
  - aggiungi:
@@ -187,9 +198,6 @@ xxx.xxx.xxx.110 externalip
 127.0.0.1       kube-master
 xxx.xxx.xxx.111 kube-slave01
 xxx.xxx.xxx.112 kube-slave02
-
-
-
 ```
 
 - Sul server Kube-Slave01
@@ -201,8 +209,6 @@ xxx.xxx.xxx.111 externalip
 xxx.xxx.xxx.110 kube-master
 127.0.0.1       kube-slave01
 xxx.xxx.xxx.112 kube-slave02
-
-
 ```
 
 - Sul server Kube-Slave02
@@ -214,8 +220,6 @@ xxx.xxx.xxx.112 externalip
 xxx.xxx.xxx.110 kube-master
 xxx.xxx.xxx.111 kube-slave01
 127.0.0.1       kube-slave02
-
-
 ```
 
 Creare un file per configurare le variabili di ambiente necessarie.`vim /etc/profile.d/kubernetes.sh`
@@ -258,7 +262,7 @@ apt update
 apt -y install kubeadm kubectl kubelet
 ```
 
-Impostiamo il kubelet in modalità standby perché si riavvia ogni secondo poiché è in un ciclo di standby e in attesa di ulteriori azioni.
+Impostiamo il kubelet in modalità standby perché si riavvia ogni secondo poiché è in attesa di ulteriori azioni.
 ```
 apt-mark hold kubelet kubeadm kubectl
 kubelet set on hold.
@@ -266,30 +270,31 @@ kubeadm set on hold.
 kubectl set on hold.
 ```
 
-Per far funzionare kubectl con utente non root, esegui questi comandi:
-Se sei root lancia `su kube` per tornare con l'utenza non root
+
+Ora la scelta migliore ricade sul creare un Utente non Privilegiato
+Creiamo un utente linux, noi lo chiameremo kube, e logghiamo con quell’utente
 ```
-su kube
-
-mkdir -p $HOME/.kube
-sudo cp -i /etc/kubernetes/admin.conf $HOME/.kube/config
-sudo chown $(id -u):$(id -g) $HOME/.kube/config
-
 sudo -i
+useradd kube -G sudo -m -s /bin/bash
+passwd packet
+su kube
 ```
 
-Altrimenti se sei root lanciare il seguente comando:
+Ora possiamo configurare le variabili d’ambiente sul nuovo utente
 ```
-export KUBECONFIG=/etc/kubernetes/admin.conf
+cd $HOME
+sudo cp /etc/kubernetes/admin.conf $HOME/
+sudo chown $(id -u):$(id -g) $HOME/admin.conf
+export KUBECONFIG=$HOME/admin.conf
+echo “export KUBECONFIG=$HOME/admin.conf” | tee -a ~/.bashrc
 ```
-
 
 Verifichiamo l'installazione
 ```
 kubectl version --client && kubeadm version
 ```
 
-
+Bene ora abbiamo finito di configurare l'utente Kubernates.
 
 #### Firewall
 
@@ -355,35 +360,54 @@ Ora useremo i seguenti parametri per creare un cluster usando il comando kubeadm
 - Questo è un set di endpoint di controllo comune per tutti i nodi se si utilizza in un cluster ad alta disponibilità.
 
 #### Copiare l'output di questo comando che ci servirà in seguito.
+Questo comando ci servirà sugli slave per fare il Join al master.
 ```
 kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 ```
 
+#### Applicazione del primo POD
+Il pod che andremo ad applicare servirà per mettere in comunicazione il master coi vari nodi.
+
+```
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
+```
+
+In caso non siano disponibli i url a kube-flannel ho rilasciato in questo repository i file necessari:
+
+```
+kubectl apply -f flannel/kube-flannel.yml
+kubectl apply -f flannel/kube-flannel-rbac.yml
+```
+
+Per verificare il corretto stato del Pod:
+
+```
+kubectl get pods –all-namespaces
+```
+
 
 #### Sul nodo Master
-Per impostazione predefinita, il tuo cluster non schedula i pod in modo automatico sul nodo master per motivi di sicurezza.
+Per impostazione predefinita, il tuo cluster non schedula i pod in modo automatico sul master per motivi di sicurezza.
 
-Per abilitare la schedulazione dei pod, ad esempio per un cluster Kubernetes a macchina singola per lo sviluppo, esegui:
+Possiamo anche fare in modo che il master diventi slave di se stesso, infatti senza questo comando non potrebbe caricare i pod che andremo a installare, naturalmente questo passaggio è consigliato o meno in base al cluster che andrete a costruire.
+
+Per abilitare/disattivare la schedulazione dei pod sul nodo master:
 
 ##### add taints (non schedulare pods su master):
 ```
 kubectl taint node kube-master node-role.kubernetes.io/master:NoSchedule
-
 ```
 
 ##### [+] remove taints (consenti di schedule pods su master):
 ```
 kubectl taint nodes --all node-role.kubernetes.io/master-
-
 ```
 
 ##### [+] Se vuoi sapere se ci sono o meno contaminazioni sul nodo master, esegui il seguente comando:
 ```
 kubectl get node kube-master --export -o yaml
-
 ```
-
-
 
 [+] Oppure dopo aver aggiunto i nodi lanciare i seguenti cmd per ogni nodo
 
@@ -395,27 +419,30 @@ kubectl taint node kube-slave02 node-role.kubernetes.io/master:NoSchedule-
 
 ## Aggiungi i Nodi
 
-Ora possiamo connettere un numero qualsiasi di nodi al master copiando le chiavi dell'account di servizio su ciascun nodo e quindi eseguendo il comando seguente come root:
-Worker 1 & Worker 2 Worker N
+Ora possiamo fare la join di un numero qualsiasi di nodi al master copiando  con le chiavi dell'account master su ciascun nodo e quindi eseguendo il comando seguente come root su ogni slave/nodo.
 
 <div>
-<img width="240" alt="slave" src="_img/slave.jpg">
+<img width="300" alt="slave" src="_img/slave.jpg">
 </div>
 
- -  Da eseguire su ogni Slave disponibile
+ -  Da eseguire su ogni Slave disponibile:
 ```
 kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 --discovery-token-ca-cert-hash sha256:8d0b3...721
 ```
 
+Se per qualche motivo avessimo perso questa stringa, nessun problema, basterà scrivere sul master, con l’utente kube: (ATTENZIONE: questo genererà un nuovo token per il join, non andando a impattare in nessun modo su chi già si trova nel cluster).
+```
+kubeadm token create –print-join-command
+```
 
 #### Verifica i nodi del cluster
-Ora sul server Master, esegui il seguente comando per verificare se gli Worker 1 e 2 sono stati aggiunti al cluster.
+Ora sul server Master, esegui il seguente comando per verificare se gli Slave sono stati aggiunti al cluster.
 ```
 kubectl get nodes
 ```
 
-Possiamo anche aggiungere altri server master:
+Possiamo In caso anche aggiungere altri server master:
 ```
 kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 --discovery-token-ca-cert-hash sha256:8d0b3...b7d064e \
@@ -440,7 +467,6 @@ kubectl get pods --all-namespaces -o jsonpath="{..image}" |\
 tr -s '[[:space:]]' '\n' |\
 sort |\
 uniq -c
-
 ```
 
 #### Verifichiamo la configurazione
@@ -448,13 +474,11 @@ uniq -c
 kubectl get nodes -o wide
 
 https://MASTERIP:6443/
-
 ```
 
 #### Aggiungere i ruoli ai nodi in kubernetes
 ```
 kubectl label node <node name> node-role.kubernetes.io/<role name>=<key - (any name)>
-
 ```
 
 ```
@@ -466,7 +490,6 @@ kubectl get nodes -o wide
 ##### [+] Aggiorna i ruoli ai nodi in kubernetes
 ```
 kubectl label --overwrite nodes <your_node> kubernetes.io/role=<your_new_label>
-
 ```
 
 ```
@@ -478,7 +501,6 @@ kubectl get nodes -o wide
 ##### [+] Rimuovi i ruoli ai nodi in kubernetes
 ```
 kubectl label node <node name> node-role.kubernetes.io/<role name>-
-
 ```
 
 ```
@@ -487,16 +509,25 @@ kubectl label node slave02 node-role.kubernetes.io/worker2-
 kubectl get nodes -o wide
 ```
 
-
-
-
-
-
 ### Deployamo un'applicazione di Test
 
 Creare un file YAML con la nuova configurazione del deployment.
 ```
 mkdir -p /kubernates/nginx
+```
+
+Dare il permesso a tutti gli utenti:
+```
+mkdir -p /kubernates/nginx
+```
+Oppure:
+
+```
+chmod -R 777 /kubernates/nginx
+```
+
+Creare il file `deployment.yaml`
+```
 vim /kubernates/nginx/deployment.yaml
 ```
 
@@ -520,7 +551,6 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 80
-
 ```
 
 Installare il nuovo deployment su Kubernetes.
@@ -541,7 +571,6 @@ vim /kubernates/nginx/service.yaml
 ```
 
 ```
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -558,7 +587,6 @@ spec:
       port: 80
   externalIPs:
     - xxx.xxx.xxx.110
-
 ```
 
 Installare il nuovo servizio Kubernetes.
@@ -580,7 +608,7 @@ kubectl get pods --output=wide
 
 - E' stato creato un nuovo POD usando l'immagine NGINX.
 - E' stato creato un nuovo servizio denominato nginx-deployment.
-- E' statoesposto la porta 80 dal nostro POD come la porta 80 dell'host externalip.
+- E' stato esposto la porta 80 dal nostro POD come la porta 80 dell'host externalip.
 
 Utilizzare il comando CURL per verificare la comunicazione con il POD che esegue Nginx.
 ```
@@ -603,7 +631,7 @@ kubectl delete deployment nginx-deployment
 ## Author
 `Andrei Alexandru Dabija`
 
-###### Un sincero grazie alla community mi ha permesso di Fornire questa guida
+###### Un sincero grazie alla community mi ha permesso di fornirvi questa guida, in caso di ulteriori approfondimenti vi lascio gli url:
 - [StackOverflow](https://stackoverflow.com/search?q=kubernates)
 - [Techexpert](https://techexpert.tips/it/kubernetes-it/installazione-di-kubernetes-su-ubuntu-linux/)
 - [liquidweb](https://www.liquidweb.com/kb/how-to-install-kubernetes-using-kubeadm-on-ubuntu-18/)
