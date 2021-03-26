@@ -272,7 +272,7 @@ Creiamo un utente linux, noi lo chiameremo kube, e logghiamo con quell’utente
 ```
 sudo -i
 useradd kube -G sudo -m -s /bin/bash
-passwd packet
+passwd kube
 su kube
 ```
 
@@ -478,8 +478,8 @@ kubectl label node <node name> node-role.kubernetes.io/<role name>=<key - (any n
 ```
 
 ```
-kubectl label nodes slave01 kubernetes.io/role=worker1
-kubectl label nodes slave02 kubernetes.io/role=worker2
+kubectl label nodes kube-slave01 kubernetes.io/role=worker1
+kubectl label nodes kube-slave02 kubernetes.io/role=worker2
 kubectl get nodes -o wide
 ```
 
@@ -489,7 +489,7 @@ kubectl label --overwrite nodes <your_node> kubernetes.io/role=<your_new_label>
 ```
 
 ```
-kubectl label --overwrite nodes slave01 kubernetes.io/role=custom,worker1
+kubectl label --overwrite nodes kube-slave01 kubernetes.io/role=custom,worker1
 kubectl get nodes -o wide
 ```
 
@@ -500,8 +500,8 @@ kubectl label node <node name> node-role.kubernetes.io/<role name>-
 ```
 
 ```
-kubectl label node slave01 node-role.kubernetes.io/worker1-
-kubectl label node slave02 node-role.kubernetes.io/worker2-
+kubectl label node kube-slave01 node-role.kubernetes.io/worker1-
+kubectl label node kube-slave02 node-role.kubernetes.io/worker2-
 kubectl get nodes -o wide
 ```
 
