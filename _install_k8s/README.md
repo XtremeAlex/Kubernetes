@@ -425,6 +425,9 @@ systemctl enable kubelet
 
 </details>
 
+
+## `Kubeadm`
+
 <details> <summary>Scarica le config necessarie.</summary>
 
 ```
@@ -433,9 +436,6 @@ kubeadm config images pull
 </details>
 
 
-
-
-## `Kubeadm`
 <details> <summary>Starta il Master</summary>
 
 ##### `ATTENZIONE`
