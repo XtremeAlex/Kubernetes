@@ -185,12 +185,13 @@ Affinché `kubelet` funzioni correttamente, è essenziale disabilitare la `memor
 	```
 	sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
 	```
+
 	- Oppure
 	```
 	sudo sed -i '/ swap / s/^/#/' /etc/fstab
 	```
+	
 		- Oppure
-
 		```
 		swapoff -a
 		```
