@@ -206,7 +206,7 @@ Affinché `kubelet` funzioni correttamente, è essenziale disabilitare la `memor
 	aggiungere:
 	```
 	@reboot sudo swapoff -a  
-```
+	```
 
 </details>
 
