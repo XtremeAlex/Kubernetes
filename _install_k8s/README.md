@@ -143,7 +143,7 @@ Potete comunque ingorarlo, infatti non vi impedirà di creare pod o deploy sul c
 	```
 
 	Aggiungere la seguente configurazione alla fine dell'elemento denominato: `ExecStart`
-	In questo modo forzeremo l’uso dei driver `systemd`, riavviamo il servizio di docker.
+	In questo modo forzeremo l’uso dei driver `systemd`.
 
 	```
 	--exec-opt native.cgroupdriver=systemd
@@ -179,8 +179,7 @@ systemctl status docker
 
 ##### `ATTENZIONE`
 
-Affinché `kubelet` funzioni correttamente, è essenziale disabilitare la `memoria SWAP`.
-Lo spazio di paginazione del disco rigido viene utilizzato per memorizzare temporaneamente i dati quando non c'è abbastanza spazio nella RAM.
+Affinché `kubelet` funzioni correttamente, è essenziale disabilitare la `memoria SWAP`, cioè lo spazio di paginazione del disco rigido che viene utilizzato per memorizzare temporaneamente i dati quando non c'è abbastanza spazio nella RAM.
 
 - Disabilitare l'utilizzo della memoria Swap, usando uno dei comandi a scelta:
 	```
@@ -191,6 +190,7 @@ Lo spazio di paginazione del disco rigido viene utilizzato per memorizzare tempo
 	sudo sed -i '/ swap / s/^/#/' /etc/fstab
 	```
 		- Oppure
+
 		```
 		swapoff -a
 		```
