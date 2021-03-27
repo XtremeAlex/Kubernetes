@@ -67,34 +67,33 @@ Per comodita usero PROXMOX seguire la guida  `/proxmox/README.md` [QUI](https://
 <img width="1024" alt="architettura" src="_img/kubernates.png">
 </div>
 
-#### Queste modifiche devono essere applicate a ogni server.
+## Queste modifiche devono essere applicate a ogni server.
 
 
-- Salire come root user
+#### Salire come root user
 ```
 sudo -i
 ```
 
-- Installare
+<details> <summary>Aggiornare/Installare i componenti neccessari</summary>
 
-```
-apt-get update && apt-get install -y
-apt-get -y install vim git curl apt-transport-https wget gnupg ntpdate mlocate
-```
-
-
-
-
-## DOCKER
-
-<details> <summary>Installare Docker</summary>
-
-	apt-get install docker.io
+	apt-get update && apt-get install -y
+	apt-get -y install vim git curl apt-transport-https wget gnupg ntpdate mlocate
 
 </details>
 
 
-Abilitare il servizio Docker durante l'avvio.
+## `Docker`
+
+<details> <summary>Installare Docker</summary>
+
+```
+apt-get install docker.io
+```
+
+</details>
+
+<details> <summary>Abilitare il servizio Docker durante l'avvio</summary>
 
 ```
 systemctl enable docker.service
@@ -102,100 +101,121 @@ systemctl daemon-reload
 systemctl restart docker
 ```
 
+</details>
 
+<details> <summary>Modificare/Creareun file di configurazione del servizio Docker</summary>
 
-#### Qui hai due possibilità:
-#### [+] - I SOLUZIONE
+##### `ATTENZIONE`
 
-- La prima è quella di modificare il file di configurazione del servizio Docker
-```
-updatedb
-locate docker.service
-vi /etc/systemd/system/multi-user.target.wants/docker.service
-```
+Kubernetes non risulta compatibile con i file system formattati in ext4 ( consigliano lo zfs).
+Durante lo start del master quindi se avete un file system formattato in ext4 potrebbe darvi un warning.
+Potete comunque ingorarlo, infatti non vi impedirà di creare pod o deploy sul cluster che stiamo andando a creare. Bisogna però forzare l’uso dei driver “systemd”, aggiungere la configurazione come segue:
 
+##### Soluzione Consigliata
 
-In questo modo forzeremo l’uso dei driver “systemd”, riavviamo il servizio di docker.
-Aggiungere la seguente configurazione alla fine dell'elemento denominato: EXECSTART
-In questo modo forzeremo l’uso dei driver “systemd”, riavviamo il servizio di docker.
-
-ATTENZIONE: kubernetes non risulta compatibile con i file system formattati in ext4 ( consigliano lo zfs), durante lo start del master quindi se avete un file system formattato in ext4 potrebbe darvi un warning.
-Ignoratatelo per il momento, infatti non vi impedirà di creare pod o deploy sul cluster che stiamo andando a creare
-
-```
---exec-opt native.cgroupdriver=systemd
-```
-File finale dopo la configurazione
-
-```
-code ...//
-
-Requires=docker.socket
-[Service]
-Type=notify
-ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
-ExecReload=/bin/kill -s HUP $MAINPID
-TimeoutSec=0
-
-//... code
-```
-####  - II SOLUZIONE  (Consigliata)
-- La seconda soluzione non implica la modifica di unità systemd o drop-in.
+- Questa soluzione non implica la modifica di unità systemd o drop-in.
 - Creare (o modificare) il file di configurazione `vim /etc/docker/daemon.json` e includere quanto segue:
 
-```
-{
-	"exec-opts": ["native.cgroupdriver=systemd"],
-	"log-driver": "json-file",
-	"log-opts": {
-		"max-size": "100m"
-		},
-	"storage-driver": "overlay2"
-}
-```
+	```
+	{
+		"exec-opts": ["native.cgroupdriver=systemd"],
+		"log-driver": "json-file",
+		"log-opts": {
+			"max-size": "100m"
+			},
+		"storage-driver": "overlay2"
+	}
+	```
 
-Dopo averlo salvato, riavvia il servizio Docker e verificare lo stato.
+##### Soluzione Alternativa:
+- Questa soluzione implica la modifica di systemd.
+
+	```
+	updatedb
+	```
+
+	```
+	locate docker.service
+	```
+
+	```
+	vi /etc/systemd/system/multi-user.target.wants/docker.service
+	```
+
+	Aggiungere la seguente configurazione alla fine dell'elemento denominato: `ExecStart`
+	In questo modo forzeremo l’uso dei driver `systemd`, riavviamo il servizio di docker.
+
+	```
+	--exec-opt native.cgroupdriver=systemd
+	```
+
+	- File finale dopo la configurazione
+
+	```
+	code ...//
+
+	Requires=docker.socket
+	[Service]
+	Type=notify
+	ExecStart=/usr/bin/dockerd -H fd:// --containerd=/run/containerd/containerd.sock --exec-opt native.cgroupdriver=systemd
+	ExecReload=/bin/kill -s HUP $MAINPID
+	TimeoutSec=0
+
+	//... code
+	```
+
+Riavvia il servizio Docker e verificare lo stato.
+
 ```
 systemctl restart docker
 systemctl status docker
 ```
 
-Affinché kubelet funzioni correttamente, è essenziale disabilitare la memoria SWAP.
+</details>
+
+## `SYSTEMA`
+
+<details> <summary>Disabilitare lo SWAP</summary>
+
+##### `ATTENZIONE`
+
+Affinché `kubelet` funzioni correttamente, è essenziale disabilitare la `memoria SWAP`.
 Lo spazio di paginazione del disco rigido viene utilizzato per memorizzare temporaneamente i dati quando non c'è abbastanza spazio nella RAM.
-- #### Disabilitare l'utilizzo della memoria Swap.
 
-```
-sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
-```
+- Disabilitare l'utilizzo della memoria Swap, usando uno dei comandi a scelta:
+	```
+	sudo sed -i '/ swap / s/^\(.*\)$/#\1/g' /etc/fstab
+	```
+	- Oppure
+	```
+	sudo sed -i '/ swap / s/^/#/' /etc/fstab
+	```
+		- Oppure
+		```
+		swapoff -a
+		```
+- Lanciare dalla bash in cmd `free` per verificare lo swap.
+- Alcuni preferiscono creare una `crontab` per disattivare ad ogni riavvio lo swap
 
-Oppure
-```
-sudo sed -i '/ swap / s/^/#/' /etc/fstab
-```
-
-Oppure
-```
-swapoff -a
-```
-
-[+] Lanciare `free` per verificare lo `swap`.
-Alcuni preferiscono creare una crontab per disattivare ad ogni riavvio lo swap
 ```
 sudo -s
 crontab -e
 ```
 
- - aggiungi:
+aggiungere:
 ```
 @reboot sudo swapoff -a  
 ```
 
+</details>
 
-##### Editare i file di host `vim /etc/hosts`
+<details> <summary>Editare i file di host</summary>
+
+##### Modificare i file di host `vim /etc/hosts`
 
 I vostri IP potrebbero essere diversi, dipende da come sono stati staccati dal DHCP.
 
-- Sul server Kube-Master
+- Sul server `Kube-Master`
 
 ```
 127.0.0.1 localhost
@@ -206,7 +226,7 @@ xxx.xxx.xxx.111 kube-slave01
 xxx.xxx.xxx.112 kube-slave02
 ```
 
-- Sul server Kube-Slave01
+- Sul server `Kube-Slave01`
 
 ```
 127.0.0.1 localhost
@@ -217,7 +237,7 @@ xxx.xxx.xxx.110 kube-master
 xxx.xxx.xxx.112 kube-slave02
 ```
 
-- Sul server Kube-Slave02
+- Sul server `Kube-Slave02`
 
 ```
 127.0.0.1 localhost
@@ -228,13 +248,18 @@ xxx.xxx.xxx.111 kube-slave01
 127.0.0.1       kube-slave02
 ```
 
-Creare un file per configurare le variabili di ambiente necessarie.`vim /etc/profile.d/kubernetes.sh`
+</details>
+
+## `Kubernastes`
+<details> <summary>Creare un file per configurare le variabili di ambiente necessarie</summary>
+
+- Creare un sh `kubernetes.sh` in `/etc/profile.d` lanciando il cmd `vim /etc/profile.d/kubernetes.sh`
 ```
 #!/bin/bash
 export KUBECONFIG=/etc/kubernetes/admin.conf
 ```
 
-Riavviare la VM.
+- Riavviare la VM.
 ```
 reboot
 ```
@@ -244,37 +269,56 @@ reboot
 sudo -i
 ```
 
-Scaricare e installare la chiave del repository Kubernetes.
+</details>
+
+<details> <summary>Scaricare e installare la chiave del repository Kubernetes.</summary>
+
 ```
 curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
 ```
 
-Aggiungi il repository ufficiale Kubernetes.
+</details>
+
+
+<details> <summary>Aggiungi il repository ufficiale Kubernetes.</summary>
+
 ```
 apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 ```
-Oppure puoi lanciare il seguente cmd:
+
+- Oppure puoi lanciare il seguente cmd:
 ```
 echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list"
 ```
 
-Install Kubelet, Kubeadm, and Kubectl
-- Kubelet: questo è un servizio di sistema che viene eseguito su tutti i nodi e configura i vari componenti del cluster.
-- Kubeadm: questo strumento permette da riga di comando di installare e configurare i vari componenti del cluster.
-- Kubectl: questo strumento permette da riga di comando di inviare comandi al cluster tramite l'API. Rende più facile lavorare con i comandi nel terminale.
+</details>
 
-```
-apt update
-apt -y install kubeadm kubectl kubelet
-```
 
-Impostiamo il kubelet in modalità standby perché si riavvia ogni secondo poiché è in attesa di ulteriori azioni.
+<details> <summary>Install Kubelet, Kubeadm, and Kubectl.</summary>
+
+- `Kubelet`: questo è un servizio di sistema che viene eseguito su tutti i nodi e configura i vari componenti del cluster.
+- `Kubeadm`: questo strumento permette da riga di comando di installare e configurare i vari componenti del cluster.
+- `Kubectl`: questo strumento permette da riga di comando di inviare comandi al cluster tramite l'API. Rende più facile lavorare con i comandi nel terminale.
+	```
+	apt update
+	apt -y install kubeadm kubectl kubelet
+	```
+
+</details>
+
+<details> <summary>Impostiamo il kubelet in modalità standby </summary>
+
+##### `ATTENZIONE`
+kubelet si riavvia ogni secondo poiché è in attesa di ulteriori azioni, perciò lanciare il seguente cmd per metterlo in standby.
+
 ```
 apt-mark hold kubelet kubeadm kubectl
-kubelet set on hold.
-kubeadm set on hold.
-kubectl set on hold.
 ```
+
+</details>
+
+
+
 
 
 Ora la scelta migliore ricade sul creare un Utente non Privilegiato
