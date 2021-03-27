@@ -319,11 +319,11 @@ apt-mark hold kubelet kubeadm kubectl
 </details>
 
 
+<details> <summary>Configurare l'utenza Kubernates</summary>
 
-
-
-Ora la scelta migliore ricade sul creare un Utente non Privilegiato
-Creiamo un utente linux, noi lo chiameremo kube, e logghiamo con quell’utente
+##### `ATTENZIONE`
+Ora la scelta migliore ricade sul creare un Utente non Privilegiato.
+- Creiamo un utente linux, noi lo chiameremo `kube`e successivamente logghiamo con quell’utente
 ```
 sudo -i
 useradd kube -G sudo -m -s /bin/bash
@@ -331,7 +331,7 @@ passwd kube
 su kube
 ```
 
-Ora possiamo configurare le variabili d’ambiente sul nuovo utente
+- Ora possiamo configurare le variabili d’ambiente sul nuovo utente
 ```
 cd $HOME
 sudo cp /etc/kubernetes/admin.conf $HOME/
@@ -340,81 +340,118 @@ export KUBECONFIG=$HOME/admin.conf
 echo “export KUBECONFIG=$HOME/admin.conf” | tee -a ~/.bashrc
 ```
 
-Verifichiamo l'installazione
+</details>
+
+
+<details> <summary>Verifichiamo l'installazione di kubectl</summary>
+
 ```
 kubectl version --client && kubeadm version
 ```
 
-Bene ora abbiamo finito di configurare l'utente Kubernates.
+</details>
 
-#### Firewall
 
+## `Firewall`
+<details> <summary>Configurare il Firewall</summary>
+
+
+##### `ATTENZIONE`
+Il modulo del kernel `br_netfilter` è necessario per abilitare il traffico con bridge tra i pod Kubernetes nel cluster.
+
+Consente ai membri del cluster di essere visualizzati e fruibili come se fossero direttamente collegati tra loro.
+
+- Per iniziare, dobbiamo assicurarci che il modulo br_netfilter venga caricato, utilizzando il seguente comando:
+```
+lsmod | grep br_netfilter
+```
+
+- In alternativa si può caricare `br_netfilter` usando i seguenti cmd.
+```
+modprobe overlay
+modprobe br_netfilter
+```
+
+- Un' altra opzione è quella di modificare il file di configurazione denominato `MODULES.CONF` e aggiungere quanto segue:
+```
+vim /etc/modules-load.d/modules.conf
+overlay
+br_netfilter
+```
+
+</details>
+
+<details> <summary>Configurare il Sistema</summary>
+
+
+##### `ATTENZIONE`
 I moduli del kernel sono file di codice che possono essere caricati e rimossi dal kernel su richiesta.
 Essi estendono le funzionalità del kernel senza bisogno di riavviare il sistema.
 I moduli extra al kernel da caricare durante il boot sono configurati in una lista statica in `etc/modules-load.d/`
 
 Configuriamo iptables per consentire il traffico attraverso il bridge di rete.
 Questa modifica è vitale perché iptables (il firewall predefinito del server) dovrebbe sempre esaminare il traffico che passa sulle connessioni.
-Ora caricheremo il modulo aggiuntivo br_netfilter.
-```
-modprobe overlay
-modprobe br_netfilter
-```
-
-[+] Oppure modificare il file di configurazione denominato `MODULES.CONF` e aggiungere quanto segue:
-
-```
-vi /etc/modules-load.d/modules.conf
-overlay
-br_netfilter
-```
-
 
 Creare un file di configurazione di sistema, nella configurazione sysctl da K8s, assegniamo il valore 1, che significa controllare il traffico.
+
+
 ```
 vi /etc/sysctl.d/k8s.conf
 
 net.bridge.bridge-nf-call-ip6tables = 1
 net.bridge.bridge-nf-call-iptables = 1
 net.ipv4.ip_forward = 1
+
 ```
 
-Abilitare il file di configurazione del sistema.
+</details>
+
+<details> <summary>Abilitare il file di configurazione del sistema.</summary>
+
 ```
 sysctl --system
 ```
 
-Crea il server master.
-Il modulo del kernel br_netfilter è necessario per abilitare il traffico con bridge tra i pod Kubernetes nel cluster.
-Consente ai membri del cluster di essere visualizzati e fruibili come se fossero direttamente collegati tra loro.
-Per iniziare, dobbiamo assicurarci che il modulo br_netfilter venga caricato utilizzando il seguente comando:
-```
-lsmod | grep br_netfilter
-```
+</details>
 
-#### START Kubket
+
+
+## `Kublet`
+<details> <summary>Avvio kubelet</summary>
+
 ```
 systemctl enable kubelet
 ```
 
-Scarica le config necessarie.
+</details>
+
+<details> <summary>Scarica le config necessarie.</summary>
+
 ```
 kubeadm config images pull
 ```
+</details>
 
-#### Crea cluster
-Ora useremo i seguenti parametri per creare un cluster usando il comando kubeadm.
 
-`--pod-network-cidr`
-- Viene utilizzato per configurare la rete e impostare gli intervalli CIDR (Classless Inter-Domain Routing), che è un metodo di indirizzamento IP senza classi.
-`--control-plane-endpoint`
-- Questo è un set di endpoint di controllo comune per tutti i nodi se si utilizza in un cluster ad alta disponibilità.
 
-#### Copiare l'output di questo comando che ci servirà in seguito.
+
+## `Kubeadm`
+<details> <summary>Starta il Master</summary>
+
+##### `ATTENZIONE`
+
+`--pod-network-cidr`: Viene utilizzato per configurare la rete e impostare gli intervalli CIDR (Classless Inter-Domain Routing), che è un metodo di indirizzamento IP senza classi.
+
+`--control-plane-endpoint`: Questo è un set di endpoint di controllo comune per tutti i nodi se si utilizza in un cluster ad alta disponibilità.
+
+`Copiare l'output di questo comando che ci servirà in seguito.`
 Questo comando ci servirà sugli slave per fare il Join al master.
 ```
 kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 ```
+
+</details>
+
 
 #### Applicazione del primo POD
 Il pod che andremo ad applicare servirà per mettere in comunicazione il master coi vari nodi.
