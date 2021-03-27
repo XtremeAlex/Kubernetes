@@ -57,7 +57,8 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 | Kube-Slave02 | 1 | 2048 | 2 | 4096 | 50 |
 
 
-### Installazione Ubuntu Server
+## Installazione Ubuntu Server
+
 Per comodita usero PROXMOX seguire la guida  `/proxmox/README.md` [QUI](https://github.com/XtremeAlex/Kubernetes/tree/develop/proxmox)
 
 
@@ -67,6 +68,7 @@ Per comodita usero PROXMOX seguire la guida  `/proxmox/README.md` [QUI](https://
 </div>
 
 #### Queste modifiche devono essere applicate a ogni server.
+
 
 - Salire come root user
 ```
@@ -80,19 +82,27 @@ apt-get update && apt-get install -y
 apt-get -y install vim git curl apt-transport-https wget gnupg ntpdate mlocate
 ```
 
-- Installare il servizio Docker.
-
-```
-apt-get install docker.io
-```
 
 
-- Abilitare il servizio Docker durante l'avvio.
+
+## DOCKER
+
+<details> <summary>Installare Docker</summary>
+
+	apt-get install docker.io
+
+</details>
+
+
+Abilitare il servizio Docker durante l'avvio.
+
 ```
 systemctl enable docker.service
 systemctl daemon-reload
 systemctl restart docker
 ```
+
+
 
 #### Qui hai due possibilità:
 #### [+] - I SOLUZIONE
