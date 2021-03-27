@@ -191,10 +191,10 @@ Affinché `kubelet` funzioni correttamente, è essenziale disabilitare la `memor
 	sudo sed -i '/ swap / s/^/#/' /etc/fstab
 	```
 	
-		- Oppure
-		```
-		swapoff -a
-		```
+	- Oppure
+	```
+	swapoff -a
+	```
 - Lanciare dalla bash in cmd `free` per verificare lo swap.
 - Alcuni preferiscono creare una `crontab` per disattivare ad ogni riavvio lo swap
 
