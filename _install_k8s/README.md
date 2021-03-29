@@ -357,9 +357,9 @@ kubectl version --client && kubeadm version
 
 
 ##### `ATTENZIONE`
-Il modulo del kernel `br_netfilter` è necessario per abilitare il traffico con bridge tra i pod Kubernetes nel cluster.
+`br_netfilter` è un modulo del kernel ed è necessario abilitarlo per attivare il traffico con bridge tra i pod Kubernetes nel cluster.
 
-Consente ai membri del cluster di essere visualizzati e fruibili come se fossero direttamente collegati tra loro.
+Consente ai membri del cluster di essere visualizzati come se fossero direttamente collegati tramite cavo.
 
 - Per iniziare, dobbiamo assicurarci che il modulo br_netfilter venga caricato, utilizzando il seguente comando:
 ```
