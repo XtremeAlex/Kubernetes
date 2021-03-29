@@ -628,9 +628,9 @@ kubectl get nodes -o wide
 
 ### Deployamo un'applicazione di Test
 
-<details> <summary>Creazione YML deployment</summary>
+<details> <summary>Creazione di una folder di lavoro</summary>
 
-Creare un file YAML con la nuova configurazione del deployment.
+Creare una folder che useremmo per creare le nostre configurazioni:
 ```
 mkdir -p /kubernates/nginx
 ```
@@ -644,6 +644,10 @@ Oppure:
 ```
 chmod -R 777 /kubernates/nginx
 ```
+
+</details>
+
+<details> <summary>Creazione YML deployment</summary>
 
 Creare il file `deployment.yaml`
 ```
