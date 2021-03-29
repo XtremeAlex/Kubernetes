@@ -481,19 +481,19 @@ kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 ### Sul nodo Master
 Per impostazione predefinita, il tuo cluster non schedula i pod in modo automatico sul master per motivi di sicurezza.
 
-Possiamo anche fare in modo che il master diventi slave di se stesso, infatti senza questo comando non potrebbe caricare i pod che andremo a installare, naturalmente questo passaggio è consigliato o meno in base al cluster che andrete a costruire.
+Possiamo anche fare in modo che il master diventi slave di se stesso, infatti in base alla scelta dei seguenti cmd non potrebbe caricare i pod che andremo a installare, naturalmente questo passaggio è consigliato o meno in base al cluster che andrete a costruire.
 
 #### Per abilitare/disattivare la schedulazione dei pod sul nodo master:
 
 ##### add taints `(non schedulare pods su master)`:
-	```
-	kubectl taint node kube-master node-role.kubernetes.io/master:NoSchedule
-	```
+```
+kubectl taint node kube-master node-role.kubernetes.io/master:NoSchedule
+```
 
 #####  remove taints `(consenti di schedule pods su master)`:
-	```
-	kubectl taint nodes --all node-role.kubernetes.io/master-
-	```
+```
+kubectl taint nodes --all node-role.kubernetes.io/master-
+```
 
 - ##### Se vuoi sapere se `ci sono o meno contaminazioni sul nodo master ?`, esegui il seguente comando:
 	```
