@@ -452,66 +452,70 @@ kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 
 </details>
 
+## `Kubectl`
+<details> <summary>Applicazione del primo POD</summary>
 
-#### Applicazione del primo POD
-Il pod che andremo ad applicare servirà per mettere in comunicazione il master coi vari nodi.
+- Il pod che andremo ad applicare servirà per mettere in comunicazione il master coi vari nodi.
 
-```
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
-```
+	```
+	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
+	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
+	```
 
-In caso non siano disponibli i url a kube-flannel ho rilasciato in questo repository i file necessari:
+- In caso non siano disponibli i url a kube-flannel ho rilasciato in questo repository i file necessari:
 
-```
-kubectl apply -f flannel/kube-flannel.yml
-kubectl apply -f flannel/kube-flannel-rbac.yml
-```
+	```
+	kubectl apply -f flannel/kube-flannel.yml
+	kubectl apply -f flannel/kube-flannel-rbac.yml
+	```
 
-Per verificare il corretto stato del Pod:
+- Per verificare il corretto stato del Pod:
 
-```
-kubectl get pods –all-namespaces
-```
+	```
+	kubectl get pods –all-namespaces
+	```
+</details>
 
+<details> <summary>Chi sono gli slave ?</summary>
 
-#### Sul nodo Master
+### Sul nodo Master
 Per impostazione predefinita, il tuo cluster non schedula i pod in modo automatico sul master per motivi di sicurezza.
 
 Possiamo anche fare in modo che il master diventi slave di se stesso, infatti senza questo comando non potrebbe caricare i pod che andremo a installare, naturalmente questo passaggio è consigliato o meno in base al cluster che andrete a costruire.
 
-Per abilitare/disattivare la schedulazione dei pod sul nodo master:
+#### Per abilitare/disattivare la schedulazione dei pod sul nodo master:
 
-##### add taints (non schedulare pods su master):
-```
-kubectl taint node kube-master node-role.kubernetes.io/master:NoSchedule
-```
+##### add taints `(non schedulare pods su master)`:
+	```
+	kubectl taint node kube-master node-role.kubernetes.io/master:NoSchedule
+	```
 
-##### [+] remove taints (consenti di schedule pods su master):
-```
-kubectl taint nodes --all node-role.kubernetes.io/master-
-```
+#####  remove taints `(consenti di schedule pods su master)`:
+	```
+	kubectl taint nodes --all node-role.kubernetes.io/master-
+	```
 
-##### [+] Se vuoi sapere se ci sono o meno contaminazioni sul nodo master, esegui il seguente comando:
-```
-kubectl get node kube-master --export -o yaml
-```
+- ##### Se vuoi sapere se `ci sono o meno contaminazioni sul nodo master ?`, esegui il seguente comando:
+	```
+	kubectl get node kube-master --export -o yaml
+	```
 
-[+] Oppure dopo aver aggiunto i nodi lanciare i seguenti cmd per ogni nodo
+##### Oppure dopo aver aggiunto i nodi lanciare i seguenti cmd per ogni nodo
 
 ```
 kubectl taint node kube-slave01 node-role.kubernetes.io/master:NoSchedule-
 kubectl taint node kube-slave02 node-role.kubernetes.io/master:NoSchedule-
 ```
 
+</details>
 
-## Aggiungi i Nodi
-
-Ora possiamo fare la join di un numero qualsiasi di nodi al master copiando  con le chiavi dell'account master su ciascun nodo e quindi eseguendo il comando seguente come root su ogni slave/nodo.
+<details> <summary>Aggiungi altri Nodi</summary>
 
 <div>
 <img width="300" alt="slave" src="_img/slave.jpg">
 </div>
+
+Ora possiamo fare la join di un numero qualsiasi di nodi al master copiando  con le chiavi dell'account master su ciascun nodo e quindi eseguendo il comando seguente come root su ogni slave/nodo.
 
  -  Da eseguire su ogni Slave disponibile:
 ```
@@ -519,12 +523,18 @@ kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 --discovery-token-ca-cert-hash sha256:8d0b3...721
 ```
 
-Se per qualche motivo avessimo perso questa stringa, nessun problema, basterà scrivere sul master, con l’utente kube: (ATTENZIONE: questo genererà un nuovo token per il join, non andando a impattare in nessun modo su chi già si trova nel cluster).
+Se per qualche motivo avessimo perso questa stringa, nessun problema, basterà scrivere sul master, con l’utente `kube`
+#### `ATTENZIONE`
+Questo genererà un nuovo token per il join, non andando a impattare in nessun modo su chi già si trova nel cluster.
+
 ```
 kubeadm token create –print-join-command
 ```
+</details>
 
-#### Verifica i nodi del cluster
+<details> <summary>Verifica i nodi del cluster</summary>
+
+
 Ora sul server Master, esegui il seguente comando per verificare se gli Slave sono stati aggiunti al cluster.
 ```
 kubectl get nodes
@@ -537,10 +547,16 @@ kubeadm join kube-master:6443 --token bf6w4x.t6l461giuzqazuy2 \
 --control-plane
 ```
 
-#### Verifichiamo lo stato del Cluster
+</details>
+
+<details> <summary>Verifichiamo lo stato del Cluster</summary>
+
 ```
 kubectl cluster-info
 ```
+</details>
+
+<details> <summary>Installa Calico</summary>
 
 #### Installa Calico Solamente sul Master
 Ora bisogna installare il plugin [Calico](https://docs.projectcalico.org/about/about-calico).
@@ -549,22 +565,31 @@ Questo plug-in di rete viene usato sia su host fisici che sulle macchine virtual
 kubectl apply -f https://docs.projectcalico.org/manifests/calico.yaml
 ```
 
-#### Verifichiamo lo stato dei Pod
+</details>
+
+<details> <summary>Verifichiamo lo stato dei Pod</summary>
+
 ```
 kubectl get pods --all-namespaces -o jsonpath="{..image}" |\
 tr -s '[[:space:]]' '\n' |\
 sort |\
 uniq -c
 ```
+</details>
 
-#### Verifichiamo la configurazione
+<details> <summary>Verifichiamo la configurazione</summary>
+
 ```
 kubectl get nodes -o wide
 
 https://MASTERIP:6443/
 ```
 
-#### Aggiungere i ruoli ai nodi in kubernetes
+</details>
+
+<details> <summary>Aggiungere/Modificare i ruoli ai nodi</summary>
+
+#### Aggiungere i ruoli ai nodi
 ```
 kubectl label node <node name> node-role.kubernetes.io/<role name>=<key - (any name)>
 ```
@@ -575,7 +600,7 @@ kubectl label nodes kube-slave02 kubernetes.io/role=worker2
 kubectl get nodes -o wide
 ```
 
-##### [+] Aggiorna i ruoli ai nodi in kubernetes
+##### Aggiorna i ruoli ai nodi in kubernetes
 ```
 kubectl label --overwrite nodes <your_node> kubernetes.io/role=<your_new_label>
 ```
@@ -586,7 +611,7 @@ kubectl get nodes -o wide
 ```
 
 
-##### [+] Rimuovi i ruoli ai nodi in kubernetes
+##### Rimuovi i ruoli ai nodi in kubernetes
 ```
 kubectl label node <node name> node-role.kubernetes.io/<role name>-
 ```
@@ -597,7 +622,13 @@ kubectl label node kube-slave02 node-role.kubernetes.io/worker2-
 kubectl get nodes -o wide
 ```
 
+</details>
+
+
+
 ### Deployamo un'applicazione di Test
+
+<details> <summary>Creazione YML deployment</summary>
 
 Creare un file YAML con la nuova configurazione del deployment.
 ```
@@ -652,6 +683,9 @@ Verificare i deployment avviati
 kubectl get deployment
 ```
 
+</details>
+
+<details> <summary>Creazione YML servizio</summary>
 
 Creare un file YAML con la nuova configurazione del servizio. (IP => kube-master)
 ```
@@ -689,7 +723,11 @@ Verificare l'elenco dei servizi Kubernetes.
 kubectl get services
 ```
 
-Verificare l'elenco dei pods Kubernetes.
+</details>
+
+
+<details> <summary>Verificare l'elenco dei pods Kubernetes.</summary>
+
 ```
 kubectl get pods --output=wide
 ```
@@ -709,12 +747,17 @@ Nel nostro esempio, il seguente URL è stato immesso nel browser:
 
 Il server Kubernetes visualizzerà la pagina Nginx.
 
+</details>
+
+<details> <summary>Eliminare il servizio Nginx</summary>
 
 ### Eliminare il test, cancellando il services e deployment
 ```
 kubectl delete services nginx-service
 kubectl delete deployment nginx-deployment
 ```
+
+</details>
 
 ## Author
 `Andrei Alexandru Dabija`
