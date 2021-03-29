@@ -58,9 +58,8 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 
 
 ## Installazione Ubuntu Server
-
-[Per comodita usero PROXMOX seguire la guida](https://github.com/XtremeAlex/Kubernetes/tree/develop/proxmox) `/proxmox/README.md`
-
+#### Visualizzare la guida su `/proxmox/README.md`
+ - #### [Per comodita usero PROXMOX seguire la guida](https://github.com/XtremeAlex/Kubernetes/tree/develop/proxmox)
 
 ## Architettura Kubernates Finale
 <div style="text-align:center">
