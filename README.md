@@ -16,6 +16,10 @@ Questo repository raccoglie guide pratiche pensate per chi si avvicina a Kuberne
 - [Deploy di NGINX su Kubernetes](https://github.com/XtremeAlex/Kubernetes/tree/develop/nginx-k8s)
 - [K3s su Raspberry Pi](https://github.com/XtremeAlex/Kubernetes/tree/develop/k3s-raspberry) — cluster Kubernetes leggero per homelab ed edge (ARM)
 
+## License
+
+Distribuito sotto licenza [Creative Commons Attribution 4.0 (CC BY 4.0)](LICENSE). Puoi condividere e adattare il materiale, anche commercialmente, a condizione di citare l'autore.
+
 ## Contatti
 
 Andrei Alexandru Dabija — [LinkedIn](https://www.linkedin.com/in/andrei-alexandru-dabija/) — [github.com/XtremeAlex](https://github.com/XtremeAlex)
