@@ -1,13 +1,21 @@
-<div style="text-align:center">
+<div align="center">
 <img width="720" alt="logo_kubernates" src="_install_k8s/_img/logo.png">
 </div>
 
+# Kubernetes
 
-# Kubernetes By Alex
-#### Questo Git è stato creato con il fine di aiutare chi vuole fare i primi passi nel mondo del DevOps.
+Raccolta di guide per muovere i primi passi nel mondo del DevOps con Kubernetes: dalla creazione di un cluster al deploy dei carichi di lavoro.
 
-- [Installazione Kubernetes su Ubuntu](https://github.com/XtremeAlex/Kubernetes/tree/develop/_install_k8s)
-  - Creazione di un Cluster Kubernetes
+## Info sul progetto
+
+Questo repository raccoglie guide pratiche pensate per chi si avvicina a Kubernetes e al DevOps, con esempi di installazione, deploy e configurazioni per homelab ed edge.
+
+## Guide
+
+- [Installazione Kubernetes su Ubuntu](https://github.com/XtremeAlex/Kubernetes/tree/develop/_install_k8s) — creazione di un cluster Kubernetes
 - [Deploy di NGINX su Kubernetes](https://github.com/XtremeAlex/Kubernetes/tree/develop/nginx-k8s)
-- [K3s su Raspberry Pi](https://github.com/XtremeAlex/Kubernetes/tree/develop/k3s-raspberry)
-  - Cluster Kubernetes leggero per homelab ed edge (ARM)
+- [K3s su Raspberry Pi](https://github.com/XtremeAlex/Kubernetes/tree/develop/k3s-raspberry) — cluster Kubernetes leggero per homelab ed edge (ARM)
+
+## Contatti
+
+Andrei Alexandru Dabija — [LinkedIn](https://www.linkedin.com/in/andrei-alexandru-dabija/) — [github.com/XtremeAlex](https://github.com/XtremeAlex)
