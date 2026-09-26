@@ -1,4 +1,8 @@
 ---
+# NOTA: PodSecurityPolicy (policy/v1beta1) e' DEPRECATO in Kubernetes 1.21 e
+# RIMOSSO dalla 1.25. Su cluster >= 1.25 rimuovere questo blocco PodSecurityPolicy
+# (e la relativa regola 'podsecuritypolicies' nel ClusterRole sottostante) e usare
+# Pod Security Admission. Mantenuto qui perche' la guida prevede Ubuntu 18.04-20.04.
 apiVersion: policy/v1beta1
 kind: PodSecurityPolicy
 metadata:
@@ -166,7 +170,7 @@ spec:
       serviceAccountName: flannel
       initContainers:
       - name: install-cni
-        image: quay.io/coreos/flannel:v0.13.1-rc2
+        image: quay.io/coreos/flannel:v0.14.0
         command:
         - cp
         args:
@@ -180,7 +184,7 @@ spec:
           mountPath: /etc/kube-flannel/
       containers:
       - name: kube-flannel
-        image: quay.io/coreos/flannel:v0.13.1-rc2
+        image: quay.io/coreos/flannel:v0.14.0
         command:
         - /opt/bin/flanneld
         args:

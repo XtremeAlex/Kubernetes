@@ -106,7 +106,7 @@ http {
 - #### 2.1 Creare la ConfigMap
 
 ```
-kubectl create configmap confnginx --from-file=./data/nginx.conf
+kubectl create configmap confnginx --from-file=/kubernates/nginx-k8s/nginx.conf
 
 ```
 
@@ -137,11 +137,11 @@ spec:
         image: nginx:1.14.2
         ports:
         - containerPort: 80
-      volumeMounts:
+        volumeMounts:
         - name: nginx-config
           mountPath: /etc/nginx/nginx.conf
           subPath: nginx.conf
-    volumes:
+      volumes:
       - name: nginx-config
         configMap:
           name: confnginx
@@ -187,7 +187,7 @@ spec:
 #### Installare il nuovo servizio Kubernetes.
 
 ```
-kubectl apply -f /kubernates/nginx/service.yaml
+kubectl apply -f /kubernates/nginx-k8s/service.yaml
 ```
 
 #### Verificare l'elenco dei servizi Kubernetes.

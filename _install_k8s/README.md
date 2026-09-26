@@ -21,16 +21,16 @@ Il salario medio di un DevOps engineer in Silicon Valley è circa  $140,000 all'
 
 Comunque possedere abilità DevOps oggi vuol dire essere molto competitivi sul mercato!
 
-Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kubernetes.io/it/docs/concepts/overview/what-is-kubernetes/).
+Per ulteriori informazioni vi prego di visitare il [sito ufficiale](https://kubernetes.io/it/docs/concepts/overview/what-is-kubernetes/).
 
 
 ## Prerequisiti
 - SO Linux / Windows / Mac
 - [VMware](https://www.vmware.com/it.html) / [Oracle VM VirtualBox](https://www.virtualbox.org/) oppure un altro VM Container di vostro gradimento.
 - - Installerò le VM su un server personale [PROXMOX](https://www.proxmox.com/en/)
-- CPU Intel i5/i7/i9 oppure AMD Razen5/7
-- RAM DISPONIBILE 12GB (Attenzione che non si potrà uttilizzare lo SWAP)
-- HDD 150GB DISPONIBILI (Si consigia un SSD)
+- CPU Intel i5/i7/i9 oppure AMD Ryzen5/7
+- RAM DISPONIBILE 12GB (Attenzione che non si potrà utilizzare lo SWAP)
+- HDD 150GB DISPONIBILI (Si consiglia un SSD)
 - [Download](https://releases.ubuntu.com/20.04.2/ubuntu-20.04.2-live-server-amd64.iso) di Ubuntu Server 20.04.2
 - Salvare nei preferiti [kubernetes/docs](https://kubernetes.io/docs/reference/generated/kubectl/kubectl-commands#-strong-getting-started-strong)
 
@@ -48,7 +48,7 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 </div>
 
 #### Installare TRE VM:
--   VM Ubuntu Server (Configurazione minima per garatire un buon funzionamento)
+-   VM Ubuntu Server (Configurazione minima per garantire un buon funzionamento)
 
 | NOME | CPU | Ram (Mb)|  CPU Conf Consigliata | Ram (Mb) Conf Consigliata | Disco (GB)|
 |:--------------|:-------------:|--------------:|--------------:|--------------:|--------------:|
@@ -61,7 +61,7 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 #### Visualizzare la guida su `/proxmox/README.md`
  - #### [Per comodita usero PROXMOX seguire la guida](https://github.com/XtremeAlex/Kubernetes/tree/develop/proxmox)
 
-## Architettura Kubernates Finale
+## Architettura Kubernetes Finale
 <div style="text-align:center">
 <img width="1024" alt="architettura" src="_img/kubernates.png">
 </div>
@@ -74,9 +74,9 @@ Per ulteriori informazioni vi prego di visitare il [sito ufficale](https://kuber
 sudo -i
 ```
 
-<details> <summary>Aggiornare/Installare i componenti neccessari</summary>
+<details> <summary>Aggiornare/Installare i componenti necessari</summary>
 
-	apt-get update && apt-get install -y
+	apt-get update
 	apt-get -y install vim git curl apt-transport-https wget gnupg ntpdate mlocate
 
 </details>
@@ -102,7 +102,7 @@ systemctl restart docker
 
 </details>
 
-<details> <summary>Modificare/Creareun file di configurazione del servizio Docker</summary>
+<details> <summary>Modificare/Creare un file di configurazione del servizio Docker</summary>
 
 ##### `ATTENZIONE`
 
@@ -250,7 +250,7 @@ xxx.xxx.xxx.111 kube-slave01
 
 </details>
 
-## `Kubernastes`
+## `Kubernetes`
 <details> <summary>Creare un file per configurare le variabili di ambiente necessarie</summary>
 
 - Creare un sh `kubernetes.sh` in `/etc/profile.d` lanciando il cmd `vim /etc/profile.d/kubernetes.sh`
@@ -274,7 +274,7 @@ sudo -i
 <details> <summary>Scaricare e installare la chiave del repository Kubernetes.</summary>
 
 ```
-curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add
+curl -s https://packages.cloud.google.com/apt/doc/apt-key.gpg | apt-key add -
 ```
 
 </details>
@@ -288,7 +288,7 @@ apt-add-repository "deb http://apt.kubernetes.io/ kubernetes-xenial main"
 
 - Oppure puoi lanciare il seguente cmd:
 ```
-echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list"
+echo "deb https://apt.kubernetes.io/ kubernetes-xenial main" | tee /etc/apt/sources.list.d/kubernetes.list
 ```
 
 </details>
@@ -322,7 +322,7 @@ apt-mark hold kubelet kubeadm kubectl
 
 ##### `ATTENZIONE`
 Ora la scelta migliore ricade sul creare un Utente non Privilegiato.
-- Creiamo un utente linux, noi lo chiameremo `kube`e successivamente logghiamo con quell’utente
+- Creiamo un utente linux, noi lo chiameremo `kube` e successivamente logghiamo con quell'utente
 ```
 sudo -i
 useradd kube -G sudo -m -s /bin/bash
@@ -330,13 +330,13 @@ passwd kube
 su kube
 ```
 
-- Ora possiamo configurare le variabili d’ambiente sul nuovo utente
+- Ora possiamo configurare le variabili d'ambiente sul nuovo utente
 ```
 cd $HOME
 sudo cp /etc/kubernetes/admin.conf $HOME/
 sudo chown $(id -u):$(id -g) $HOME/admin.conf
 export KUBECONFIG=$HOME/admin.conf
-echo “export KUBECONFIG=$HOME/admin.conf” | tee -a ~/.bashrc
+echo "export KUBECONFIG=$HOME/admin.conf" | tee -a ~/.bashrc
 ```
 
 </details>
@@ -445,8 +445,12 @@ kubeadm config images pull
 
 `Copiare l'output di questo comando che ci servirà in seguito.`
 Questo comando ci servirà sugli slave per fare il Join al master.
+
+##### `NOTA`
+Il valore di `--pod-network-cidr` deve coincidere con la rete configurata in Flannel
+(`net-conf.json` -> `"Network": "10.244.0.0/16"`), altrimenti la rete dei pod non funzionerà.
 ```
-kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
+kubeadm init --pod-network-cidr=10.244.0.0/16 --control-plane-endpoint=kube-master
 ```
 
 </details>
@@ -457,11 +461,10 @@ kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 - Il pod che andremo ad applicare servirà per mettere in comunicazione il master coi vari nodi.
 
 	```
-	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/kube-flannel.yml
-	kubectl apply -f https://raw.githubusercontent.com/coreos/flannel/master/Documentation/k8s-manifests/kube-flannel-rbac.yml
+	kubectl apply -f https://github.com/flannel-io/flannel/releases/latest/download/kube-flannel.yml
 	```
 
-- In caso non siano disponibli i url a kube-flannel ho rilasciato in questo repository i file necessari:
+- In caso non sia disponibile l'url a kube-flannel ho rilasciato in questo repository i file necessari:
 
 	```
 	kubectl apply -f flannel/kube-flannel.yml
@@ -471,7 +474,7 @@ kubeadm init --pod-network-cidr=10.0.0.0/16 --control-plane-endpoint=kube-master
 - Per verificare il corretto stato del Pod:
 
 	```
-	kubectl get pods –all-namespaces
+	kubectl get pods --all-namespaces
 	```
 </details>
 
@@ -496,7 +499,7 @@ kubectl taint nodes --all node-role.kubernetes.io/master-
 
 - ##### Se vuoi sapere se `ci sono o meno contaminazioni sul nodo master ?`, esegui il seguente comando:
 	```
-	kubectl get node kube-master --export -o yaml
+	kubectl get node kube-master -o yaml
 	```
 
 ##### Oppure dopo aver aggiunto i nodi lanciare i seguenti cmd per ogni nodo
@@ -527,7 +530,7 @@ Se per qualche motivo avessimo perso questa stringa, nessun problema, basterà s
 Questo genererà un nuovo token per il join, non andando a impattare in nessun modo su chi già si trova nel cluster.
 
 ```
-kubeadm token create –print-join-command
+kubeadm token create --print-join-command
 ```
 </details>
 
@@ -581,7 +584,7 @@ uniq -c
 ```
 kubectl get nodes -o wide
 
-https://MASTERIP:6443/
+https://<EXTERNAL_IP>:6443/
 ```
 
 </details>
@@ -635,11 +638,6 @@ mkdir -p /kubernates/nginx
 ```
 
 Dare il permesso a tutti gli utenti:
-```
-mkdir -p /kubernates/nginx
-```
-Oppure:
-
 ```
 chmod -R 777 /kubernates/nginx
 ```
@@ -711,7 +709,7 @@ spec:
       targetPort: 80
       port: 80
   externalIPs:
-    - xxx.xxx.xxx.110
+    - <EXTERNAL_IP>   # sostituisci con l'IP del tuo nodo master (kube-master)
 ```
 
 Installare il nuovo servizio Kubernetes.

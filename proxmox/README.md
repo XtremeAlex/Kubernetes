@@ -11,7 +11,7 @@
 
 
 #### Installare TRE VM:
--   VM Ubuntu Server (Configurazione minima per garatire un buon funzionamento)
+-   VM Ubuntu Server (Configurazione minima per garantire un buon funzionamento)
 
 | NOME | CPU | Ram (Mb)|  CPU Conf Consigliata | Ram (Mb) Conf Consigliata | Disco (GB)|
 |:--------------|:-------------:|--------------:|--------------:|--------------:|--------------:|

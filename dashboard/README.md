@@ -23,8 +23,8 @@ Andiamo sul Master e come consigliato dalla pagina github, eliminiamo ogni event
 ```
 su kube
 kubectl delete ns kubernetes-dashboard
-kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.0.0-beta8/aio/deploy/recommended.yaml
-kubectl get all –all-namespaces
+kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/aio/deploy/recommended.yaml
+kubectl get all --all-namespaces
 ```
 
 Avremo bisogno di un account amministratore di kubernetes per accedere alla dashboard, in modo tale che abbia i permessi per poter monitorare controllare il cluster, altrimenti potrebbe tornare un errori/warning.
@@ -38,8 +38,9 @@ vim /kubernates/dashboard/webkube-dashboard.yml
 ```
 apiVersion: v1
 kind: ServiceAccount
-metadata:ame: web-kube
-namespace: kube-system
+metadata:
+  name: web-kube
+  namespace: kube-system
 ```
 
 ```
@@ -62,7 +63,7 @@ roleRef:
   kind: ClusterRole
   name: cluster-admin
 subjects:
-– kind: ServiceAccount
+- kind: ServiceAccount
   name: web-kube
   namespace: kube-system
 ```
@@ -75,7 +76,7 @@ kubectl apply -f /kubernates/dashboard/ClusterRoleBinding.yml
 Prima di provare ad accedere alla dashboard via browser ci serve un ultimo dato, il token segreto per l’accesso con il nuovo utente creato, possiamo risalire al token con questo comando:
 
 ```
-kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep web-kube | awk ‘{print $1}’)
+kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep web-kube | awk '{print $1}')
 ```
 
 Teniamoci da parte questo token.
@@ -89,7 +90,7 @@ kubectl proxy
 Ora andiamo sul nostro pc e creiamo questo tunnel verso il master, apriamo una shell in locale e usiamo il comando inserendo al posto delle x l'ip del nodo master:
 
 ```
-ssh -L 8001:127.0.0.1:8001 -N kube@xxx.xxx.xxx.xxx
+ssh -L 8001:127.0.0.1:8001 -N kube@<IP_MASTER>
 ```
 
 #### Ora possiamo accedere alla dashboard tramite l’indirizzo dal browser
