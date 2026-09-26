@@ -9,3 +9,5 @@
 - [Installazione Kubernates su Ubuntu](https://github.com/XtremeAlex/Kubernetes/tree/develop/_install_k8s)
   - Creazione di un Cluster Kubernates
 - [Deploy di NGINX su Kubernates](https://github.com/XtremeAlex/Kubernetes/tree/develop/nginx-k8s)
+- [K3s su Raspberry Pi](https://github.com/XtremeAlex/Kubernetes/tree/develop/k3s-raspberry)
+  - Cluster Kubernetes leggero per homelab ed edge (ARM)
