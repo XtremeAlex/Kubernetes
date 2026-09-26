@@ -180,7 +180,7 @@ spec:
       targetPort: 80
       port: 80
   externalIPs:
-    - 192.168.188.120
+    - <EXTERNAL_IP>   # sostituisci con l'IP del tuo nodo/cluster
 
 ```
 
