@@ -1,21 +1,21 @@
-<div style="text-align:center">
-<img width="720" alt="logo_k3s" src="../_install_k8s/_img/logo.png">
+<div align="center">
+<img width="720" alt="Logo Kubernetes" src="../_install_k8s/_img/logo.png">
 </div>
 
 # K3s su Raspberry Pi
 
-Guida per installare un cluster **K3s** (la distribuzione Kubernetes leggera di
-Rancher/SUSE) su Raspberry Pi. Pensata per homelab ed edge: bassi consumi,
-footprint ridotto, ideale su ARM.
+Un cluster Kubernetes vero che sta in un cassetto: questa guida installa **K3s**
+(la distribuzione Kubernetes leggera di Rancher/SUSE) su Raspberry Pi. È pensata
+per homelab ed edge: consuma poco, occupa poco e su ARM gira benissimo.
 
 > Tutti gli indirizzi, gli hostname e i token in questa guida sono **placeholder**
 > (`<...>`). Sostituiscili con i tuoi valori e non committare mai dati reali della
 > tua rete.
 
-## Perche K3s e non K8s
+## Perché K3s e non K8s
 
 - Binario unico, memoria ridotta: gira bene su Raspberry Pi 4 (4-8 GB).
-- Include gia Traefik (ingress), ServiceLB e local-path storage.
+- Include già Traefik (ingress), ServiceLB e local-path storage.
 - containerd al posto di Docker; SQLite al posto di etcd in single-node.
 
 ## Prerequisiti
@@ -76,7 +76,7 @@ altro. Per esporre un servizio, definisci un `Ingress` verso il tuo host.
 
 ## Storage
 
-La `storageClass` di default e `local-path`: i dati restano sul nodo. Per carichi
+La `storageClass` di default è `local-path`: i dati restano sul nodo. Per carichi
 stateful su piu nodi valuta uno storage di rete (NFS) invece di local-path.
 
 ## Disinstallazione

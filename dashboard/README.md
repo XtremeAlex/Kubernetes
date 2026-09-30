@@ -1,25 +1,32 @@
-<div style="text-align:center">
-<img width="" alt="dashboard" src="_img/dashboard.png">
+<div align="center">
+<img alt="Kubernetes Dashboard" src="_img/dashboard.png">
 </div>
 
 # [Kubernetes Dashboard](https://github.com/kubernetes/dashboard)
-## E' il client GUI più usato su Kubernetes.
 
-Questa dashboard Web offre una panoramica delle applicazioni in esecuzione sul cluster, nonché permette la creazione o la modifica di singole risorse Kubernetes.
+È il client grafico più usato per Kubernetes: un'interfaccia web che mostra
+cosa gira nel cluster e permette di creare o modificare le singole risorse.
 
-Rispetto ad altri client come Lens e Octant, la sua capacità di filtraggio è limitata.
-Non puoi filtrare le risorse per label.
+Rispetto ad altri client come Lens e Octant filtra poco: per esempio non puoi
+filtrare le risorse per label. E la configurazione non è immediata: la
+dashboard va installata nel cluster e bisogna sistemare l'accesso degli utenti.
+Di default chiede ogni volta un token o il caricamento del file kubeconfig;
+alcuni tutorial suggeriscono di metterci davanti un OAuth2 proxy per
+semplificare il login.
 
-#### La sua configurazione non è così semplice.
-Kubernetes Dashboard deve essere installata nel tuo cluster e bisogna gestire alcuni problemi di accesso dell'utente.
+> Guida scritta nel 2021 per la dashboard v2.7.0. Nelle versioni più recenti
+> l'installazione passa da Helm, e da Kubernetes 1.24 i ServiceAccount non
+> ricevono più in automatico un Secret con il token: in quel caso il token si
+> ottiene con `kubectl -n kube-system create token web-kube`.
 
-La sua configurazione predefinita richiede ogni volta l'accesso tramite il token oppure attraverso il caricamento del file KubeConfig.
+Tutti i comandi si eseguono sul master con l'utente `kube` (quello creato nella
+guida [`_install_k8s`](../_install_k8s/)).
 
-Alcuni tutorial suggeriscono di iniettare un proxy di riserva OAuth2 davanti per semplificare il processo di accesso.
+## 1. Installa la dashboard
 
-Andiamo sul Master e come consigliato dalla pagina github, eliminiamo ogni eventuale precedente versione della dashboard prima di fare il deploy (noi andiamo sempre a utilizzare l’utente kube).
+Come consiglia la pagina GitHub del progetto, prima elimina eventuali versioni
+precedenti, poi fai il deploy:
 
-#### Per installarlo eseguire il seguente comando sul master
 ```
 su kube
 kubectl delete ns kubernetes-dashboard
@@ -27,9 +34,12 @@ kubectl apply -f https://raw.githubusercontent.com/kubernetes/dashboard/v2.7.0/a
 kubectl get all --all-namespaces
 ```
 
-Avremo bisogno di un account amministratore di kubernetes per accedere alla dashboard, in modo tale che abbia i permessi per poter monitorare controllare il cluster, altrimenti potrebbe tornare un errori/warning.
+## 2. Crea un utente amministratore
 
-Andiamo quindi a creare lo yaml che ci servirà per la creazione dell’utente, sempre dal master e sempre con l’utente kube (guardare _install_k8s).
+Per monitorare e controllare il cluster dalla dashboard serve un account con i
+permessi giusti, altrimenti vedrai errori e warning. Crea il file YAML per il
+ServiceAccount:
+
 ```
 mkdir -p /kubernates/dashboard
 vim /kubernates/dashboard/webkube-dashboard.yml
@@ -47,7 +57,10 @@ metadata:
 kubectl apply -f /kubernates/dashboard/webkube-dashboard.yml
 ```
 
-Ora dovremo assegnare il ruolo di admin all’utente appena creato per farlo creiamo un nuovo file chiamato ClusterRoleBinding.yml non farà altro che copiare i permessi di un utente che dovrebbe già esistere nel cluster e assegnarli a questo nuovo utente.
+## 3. Dagli il ruolo di admin
+
+Il file `ClusterRoleBinding.yml` collega il nuovo utente al ruolo
+`cluster-admin`, che esiste già nel cluster:
 
 ```
 vim /kubernates/dashboard/ClusterRoleBinding.yml
@@ -72,41 +85,52 @@ subjects:
 kubectl apply -f /kubernates/dashboard/ClusterRoleBinding.yml
 ```
 
-#### Vediamo il token per l’accesso
-Prima di provare ad accedere alla dashboard via browser ci serve un ultimo dato, il token segreto per l’accesso con il nuovo utente creato, possiamo risalire al token con questo comando:
+Nota: `cluster-admin` dà pieno controllo sul cluster. Va bene per un homelab;
+altrove usa un ruolo più ristretto.
+
+## 4. Recupera il token di accesso
+
+Prima di aprire il browser ti serve il token segreto del nuovo utente:
 
 ```
 kubectl -n kube-system describe secret $(kubectl -n kube-system get secret | grep web-kube | awk '{print $1}')
 ```
 
-Teniamoci da parte questo token.
+Tienilo da parte.
 
-#### Ora per poter accedere alla dashboard da fuori il cluster dobbiamo creare un tunnelling verso il master, prima però abilitiamo il proxy:
+## 5. Apri un tunnel verso il master
+
+Per raggiungere la dashboard da fuori il cluster, avvia il proxy sul master:
 
 ```
 kubectl proxy
 ```
 
-Ora andiamo sul nostro pc e creiamo questo tunnel verso il master, apriamo una shell in locale e usiamo il comando inserendo al posto delle x l'ip del nodo master:
+Poi, da una shell sul tuo PC, apri un tunnel SSH verso il master (metti l'IP
+del nodo master al posto di `<IP_MASTER>`):
 
 ```
 ssh -L 8001:127.0.0.1:8001 -N kube@<IP_MASTER>
 ```
 
-#### Ora possiamo accedere alla dashboard tramite l’indirizzo dal browser
+## 6. Accedi
+
+Apri nel browser:
+
 ```
 http://localhost:8001/api/v1/namespaces/kubernetes-dashboard/services/https:kubernetes-dashboard:/proxy/
 ```
 
-Scegliamo come tipo di accesso “by token” e inseriamo quello dell’utente web-kube trovato e salvato in precedenza.
+Scegli l'accesso con token e incolla quello dell'utente `web-kube`. Da qui hai
+il pieno controllo di pod, servizi e deployment.
 
-Fatto l’accesso alla dashboard, possiamo avere il pieno controllo di ogni pod, servizio o deployment.
+## Autore
 
+Andrei Alexandru Dabija — [github.com/XtremeAlex](https://github.com/XtremeAlex)
 
-## Author
-`Andrei Alexandru Dabija`
+Un grazie sincero alla community, senza la quale questa guida non ci sarebbe.
+Per approfondire:
 
-###### Un sincero grazie alla community mi ha permesso di fornirvi questa guida, in caso di ulteriori approfondimenti vi lascio gli url:
 - [StackOverflow](https://stackoverflow.com/search?q=kubernates)
 - [Techexpert](https://techexpert.tips/it/kubernetes-it/installazione-di-kubernetes-su-ubuntu-linux/)
 - [Liquidweb](https://www.liquidweb.com/kb/how-to-install-kubernetes-using-kubeadm-on-ubuntu-18/)

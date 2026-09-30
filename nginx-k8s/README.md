@@ -1,19 +1,23 @@
-<div style="text-align:center">
-<img width="720" alt="nginx_logo" src="_img/nginx_logo.png">
+<div align="center">
+<img width="720" alt="Logo NGINX" src="_img/nginx_logo.png">
 </div>
 
-# Installare NGINX su Kubernetes.
+# NGINX su Kubernetes
 
-Prima di tutto bisogna prendere in considerazione che nginx necessiterà dei alcune configurazioni essenziali e fondamentali per un corretto utilizzo, mi riferisco alle configurazioni `nginx.conf` , ` altra-configurazione.conf `.
+Far partire NGINX su Kubernetes è facile; il punto è dargli la tua
+configurazione (`nginx.conf` ed eventuali file aggiuntivi, qui chiamati
+`altra-configurazione.conf`). Il modo giusto è passarla tramite una ConfigMap e
+montarla nel container. Si può fare in due modi: scrivere la ConfigMap in YAML,
+oppure crearla a partire da un file `.conf`.
 
-### Si può procedere in due modi:
-
- - #### 1 Creare una ConfigMap Object e montarla
+## Opzione 1 — ConfigMap scritta in YAML
 
 ```
 mkdir -p /kubernates/nginx-k8s
-vim /kubernates/nginx-k8s/deployment.yaml
+vim /kubernates/nginx-k8s/configmap.yaml
 ```
+
+La struttura è questa: ogni chiave sotto `data` diventa un file.
 
 ```
 apiVersion: v1
@@ -35,10 +39,9 @@ data:
     configurazione
     secondaria
     qui
-
 ```
 
-#### Esempio:
+Un esempio concreto:
 
 ```
 apiVersion: v1
@@ -62,11 +65,15 @@ data:
         }
       }
     }
-
 ```
 
+Applicala con `kubectl apply -f /kubernates/nginx-k8s/configmap.yaml`. Se scegli
+questa strada, nel deployment più sotto usa `name: nginx-config` al posto di
+`confnginx` nella sezione `volumes`.
 
-- #### 2 Creare un file conf dentro un path `/kubernates/nginx-k8s/nginx.conf` , convertirlo in mappa e poi montarlo:
+## Opzione 2 — ConfigMap creata da un file
+
+Scrivi la configurazione in `/kubernates/nginx-k8s/nginx.conf`:
 
 ```
 # Configurazione Personalizzata
@@ -100,18 +107,17 @@ http {
 
     include /etc/nginx/conf.d/*.conf;
 }
-
 ```
 
-- #### 2.1 Creare la ConfigMap
+e trasformala in una ConfigMap:
 
 ```
 kubectl create configmap confnginx --from-file=/kubernates/nginx-k8s/nginx.conf
-
 ```
 
+## Il deployment
 
-- #### 3 Creare un file YAML con la nuova configurazione del deployment e montare le mappe per i file di configurazione.
+Il deployment monta la ConfigMap al posto di `/etc/nginx/nginx.conf`:
 
 ```
 vim /kubernates/nginx-k8s/deployment.yaml
@@ -145,26 +151,24 @@ spec:
       - name: nginx-config
         configMap:
           name: confnginx
-
 ```
 
-#### Installare il nuovo deployment su Kubernetes.
+Installalo e controlla che sia partito:
+
 ```
 kubectl apply -f /kubernates/nginx-k8s/deployment.yaml
-```
-
-#### Verificare i deployment avviati
-```
 kubectl get deployment
 ```
 
-#### Creare un file YAML con la nuova configurazione del servizio.
+## Il servizio
+
+Per raggiungere NGINX da fuori serve un Service:
+
 ```
 vim /kubernates/nginx-k8s/service.yaml
 ```
 
 ```
-
 apiVersion: v1
 kind: Service
 metadata:
@@ -181,20 +185,18 @@ spec:
       port: 80
   externalIPs:
     - <EXTERNAL_IP>   # sostituisci con l'IP del tuo nodo/cluster
-
 ```
 
-#### Installare il nuovo servizio Kubernetes.
+Installalo e verifica l'elenco dei servizi:
 
 ```
 kubectl apply -f /kubernates/nginx-k8s/service.yaml
-```
-
-#### Verificare l'elenco dei servizi Kubernetes.
-
-```
 kubectl get services
 ```
 
-## Author
-`Andrei Alexandru Dabija`
+Nota: `nginx:1.14.2` è la versione degli esempi ufficiali di allora; per un uso
+reale scegli un tag aggiornato.
+
+## Autore
+
+Andrei Alexandru Dabija — [github.com/XtremeAlex](https://github.com/XtremeAlex)
